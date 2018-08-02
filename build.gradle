@@ -27,4 +27,8 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	compile group: 'org.springframework', name: 'spring-webmvc', version: '5.0.8.RELEASE'
+	// used by dto converters
+	compile group: 'org.modelmapper', name: 'modelmapper', version: '2.1.0'
+	compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'	
 }
