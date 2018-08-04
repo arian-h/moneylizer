@@ -30,10 +30,9 @@ public class AppConfig implements WebMvcConfigurer {
 
 	private class CustomResourceResolver implements ResourceResolver {
 		private Resource index = new ClassPathResource("/public/index.html");
-		private List<String> handledExtensions = Arrays.asList("html", "js",
-				"json", "csv", "css", "png", "svg", "eot", "ttf", "woff",
-				"appcache", "jpg", "jpeg", "gif", "ico");
-		
+		private List<String> handledExtensions = Arrays.asList("css", "png",
+				"svg", "jpg", "jpeg", "gif", "ico");
+
 		private List<String> ignoredPaths = Arrays.asList("^api\\/.*$");
 
 		@Override
