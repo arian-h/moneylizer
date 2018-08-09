@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/home")
 public class InvestmentController {
 
-	/*TODO update return type and the write comments*/
+	/* TODO update return type and the write comments */
 
 	@RequestMapping(path = "/", method = RequestMethod.GET)
 	public void list(@PathVariable long investmentId, Principal principal) {

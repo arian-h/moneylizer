@@ -24,8 +24,7 @@ public class AppConfig implements WebMvcConfigurer {
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/**")
 				.addResourceLocations("classpath:/public/")
-				.resourceChain(false)
-				.addResolver(new CustomResourceResolver());
+				.resourceChain(false).addResolver(new CustomResourceResolver());
 	}
 
 	private class CustomResourceResolver implements ResourceResolver {
@@ -56,7 +55,8 @@ public class AppConfig implements WebMvcConfigurer {
 			}
 		}
 
-		private Resource resolve(String requestPath, List<? extends Resource> locations) {
+		private Resource resolve(String requestPath,
+				List<? extends Resource> locations) {
 			if (isIgnored(requestPath)) {
 				return null;
 			}
@@ -80,21 +80,23 @@ public class AppConfig implements WebMvcConfigurer {
 		}
 
 		private boolean isIgnored(String path) {
-			return !ignoredPaths.stream().noneMatch(rgx -> Pattern.matches(rgx, path));
+			return !ignoredPaths.stream().noneMatch(
+					rgx -> Pattern.matches(rgx, path));
 		}
 
 		private boolean isHandled(String path) {
 			String extension = StringUtils.getFilenameExtension(path);
-			return handledExtensions.stream().anyMatch(ext -> ext.equals(extension));
+			return handledExtensions.stream().anyMatch(
+					ext -> ext.equals(extension));
 		}
 	}
-	
-	//TODO remove this after active development of the front-end
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-        	.exposedHeaders("Authorization", "Content-Type")
-        	.allowedMethods("*");
-    }
+
+	// TODO remove this after active development of the front-end
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+				.exposedHeaders("Authorization", "Content-Type")
+				.allowedMethods("*");
+	}
 
 }
