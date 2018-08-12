@@ -1,6 +1,15 @@
 # Compiled class file
 *.class
 
+
+#Node
+bundle.js
+npm-debug.log
+**/node_modules/
+.DS_Store
+/*.env
+
+
 # Log file
 *.log
 /bin
