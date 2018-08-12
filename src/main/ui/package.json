@@ -1,0 +1,11 @@
+{
+  "name": "moneylizer-ui",
+  "version": "1.0.0",
+  "description": "User interface for the the moneylizer project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Arian Hosseinzadeh",
+  "license": "ISC"
+}
