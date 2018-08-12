@@ -9,6 +9,9 @@
   "author": "Arian Hosseinzadeh",
   "license": "ISC",
   "devDependencies": {
-    "webpack": "^4.16.5"
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
   }
 }
