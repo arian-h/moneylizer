@@ -1,19 +1,15 @@
 buildscript {
-	ext {
-		springBootVersion = '2.0.4.RELEASE'
-	}
 	repositories {
 		mavenCentral()
 	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
+plugins {
+	id "com.moowork.node" version "1.2.0"
+	id "java"
+	id "eclipse"
+	id "org.springframework.boot" version "2.0.4.RELEASE"
+}
 
 group = 'com.karen'
 version = '0.0.1-SNAPSHOT'
@@ -28,6 +24,29 @@ jar {
         attributes 'Main-Class': 'com.karen.moneylizer.MoneylizerApplication'
     }
 }
+
+node {
+    version = '8.9.1'
+	// If true, it will download node using above parameters.
+	// If false, it will try to use globally installed node.
+    download = true
+    //the work directory for npm
+    npmWorkDir = file('src/main/ui')
+    //the directory for node_modules
+    nodeModulesDir = file('src/main/ui')
+}
+
+task webpack(type: YarnTask, dependsOn: 'npmInstall') {
+	args = ['build']
+	// the same name as the script in package.json
+}
+
+task copyTask(type: Copy, dependsOn: 'webpack') {
+    from 'src/main/ui/bundle.js'
+    into 'src/main/resources/static/js'
+}
+
+processResources.dependsOn 'copyTask'
 
 dependencies {
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.0.4.RELEASE'
