@@ -5,15 +5,20 @@ buildscript {
 }
 
 plugins {
-	id "com.moowork.node" version "1.2.0"
-	id "java"
-	id "eclipse"
-	id "org.springframework.boot" version "2.0.4.RELEASE"
+	id 'com.moowork.node' version '1.2.0'
+	id 'java'
+	id 'eclipse'
+	//a plugin to run the gradle application using command line: ./gradlew run
+    id 'application'
+	id 'org.springframework.boot' version '2.0.4.RELEASE'
 }
 
 group = 'com.karen'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
+
+//used by the application plugin
+mainClassName = 'com.karen.moneylizer.MoneylizerApplication' 
 
 repositories {
 	mavenCentral()
@@ -43,7 +48,7 @@ task webpack(type: YarnTask, dependsOn: 'npmInstall') {
 
 task copyTask(type: Copy, dependsOn: 'webpack') {
     from 'src/main/ui/bundle.js'
-    into 'src/main/resources/static/js'
+    into 'src/main/resources/public/static/js/'
 }
 
 processResources.dependsOn 'copyTask'
