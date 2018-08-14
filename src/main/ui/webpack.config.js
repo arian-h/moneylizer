@@ -1,7 +1,5 @@
 module.exports = {
-  entry: [
-    './src/index.js'
-  ],
+  entry: './src/index.js',
   output: {
     path: __dirname,
     publicPath: '/',
@@ -14,5 +12,9 @@ module.exports = {
       loader: 'babel-loader'
     }]
   },
-  mode: 'development'
+  mode: 'development',
+  devServer: {
+    historyApiFallback: true,
+    contentBase: './'
+  }
 };
