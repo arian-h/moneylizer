@@ -12,6 +12,7 @@ Gradle doesn't support continuous build and run, therefore I added `webpack-dev-
 
 
 ### The app uses openssl and SHA512 to create JWT token
-echo -n "somevalue" | openssl sha512 -hmac "somekey"
-Use the correct signing key (somekey) and the correct message (somevalue) to create the key
-The signing key should be stored in MONEYLIZER_JWT_SECRET_KEY as a system environment variable.
+`echo -n "somevalue" | openssl sha512 -hmac "somekey"`
+
+Use the correct signing key (`somekey`) and the correct message (`somevalue`) to create the key.
+The signing key should be stored in `MONEYLIZER_JWT_SECRET_KEY` as a system environment variable.
