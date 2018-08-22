@@ -1,6 +1,7 @@
 # Compiled class file
 *.class
 
+additional-spring-configuration-metadata.json
 
 #Node
 bundle.js
