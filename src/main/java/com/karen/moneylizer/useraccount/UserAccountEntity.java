@@ -32,10 +32,10 @@ public class UserAccountEntity implements UserDetails {
 	private String id;
 
 	@NotBlank
-	private final String username;
+	private String username;
 
 	@NotBlank
-	private final String password;
+	private String password;
 
 	@NotNull
 	@MapsId
@@ -46,6 +46,8 @@ public class UserAccountEntity implements UserDetails {
 		this.password = password;
 		this.username = username;
 	}
+
+	public UserAccountEntity() {}
 
 	public void setUser(final UserEntity user) {
 		this.user = user;
