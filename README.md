@@ -16,3 +16,6 @@ Gradle doesn't support continuous build and run, therefore I added `webpack-dev-
 
 Use the correct signing key (`somekey`) and the correct message (`somevalue`) to create the key.
 The signing key should be stored in `MONEYLIZER_JWT_SECRET_KEY` as a system environment variable.
+
+### To debug the app with Eclipse when app is running in terminal
+Run the app using `sudo -E ./gradlew run --debug-jvm` in terminal, debug the app using Remote Java Application in eclipse, host name "localhost", port "5005"
