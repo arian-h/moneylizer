@@ -75,21 +75,19 @@ public class UserAccountService implements UserDetailsService {
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(username,
 						password));
-		if (authentication != null) {
-			response.addHeader(SecurityConstants.AUTHENTICATION_HEADER, String
-					.format("%s %s", SecurityConstants.BEARER,
-							generateJwtToken(username)));
-			SecurityContextHolder.getContext()
-					.setAuthentication(authentication);
-			return ((UserAccountEntity) (authentication.getPrincipal()))
-					.getId();
+		if (authentication == null) {
+			throw new BadCredentialsException("Bad username/password presented");
 		}
-		throw new BadCredentialsException("Bad username/password presented");
+		response.addHeader(SecurityConstants.AUTHENTICATION_HEADER, String
+				.format("%s %s", SecurityConstants.BEARER,
+						generateJwtToken(username)));
+		SecurityContextHolder.getContext()
+				.setAuthentication(authentication);
+		return ((UserAccountEntity) (authentication.getPrincipal()))
+				.getId();
 	}
 
 	private String generateJwtToken(String username) {
-		String s = SecurityConstants.JWT_SECRET;
-		System.out.println(s);
 		return Jwts
 				.builder()
 				.setSubject(username)
