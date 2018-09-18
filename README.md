@@ -2,7 +2,7 @@
 Personal stock screener and notification system
 
 ### To run the project with gradle
-Use the `application` plugin: `sudo ./gradlew run`
+Use the `application` plugin: `sudo -E ./gradlew run`
 In the UI directory, run the `webpack-dev-server` by running: `npm start`
 
 ### To build the project and refresh the project dependencies with gradle
