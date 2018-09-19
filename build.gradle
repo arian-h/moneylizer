@@ -41,9 +41,12 @@ node {
     nodeModulesDir = file('src/main/ui')
 }
 
-task webpack(type: YarnTask, dependsOn: 'npmInstall') {
-	args = ['build']
-	// the same name as the script in package.json
+task webpack(type: Exec, dependsOn: 'npmInstall') {
+	workingDir 'src/main/ui'
+	commandLine 'node_modules/webpack/bin/webpack.js'
+	//to monitor the changes and decide whether to use cached result or not
+	inputs.file('package-lock.json')
+	inputs.dir('src')
 }
 
 task copyTask(type: Copy, dependsOn: 'webpack') {
