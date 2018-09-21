@@ -32,8 +32,8 @@ jar {
 
 node {
     version = '8.9.1'
-	// If true, it will download node using above parameters.
-	// If false, it will try to use globally installed node.
+	//If true, it will download node using above parameters.
+	//If false, it will try to use globally installed node.
     download = true
     //the work directory for npm
     npmWorkDir = file('src/main/ui')
@@ -44,7 +44,8 @@ node {
 task webpack(type: Exec, dependsOn: 'npmInstall') {
 	workingDir 'src/main/ui'
 	commandLine 'node_modules/webpack/bin/webpack.js'
-	//to monitor the changes and decide whether to use cached result or not
+	//to monitor the changes and 
+	//decide whether to use cached result for the next run or not
 	inputs.file('package-lock.json')
 	inputs.dir('src')
 }
