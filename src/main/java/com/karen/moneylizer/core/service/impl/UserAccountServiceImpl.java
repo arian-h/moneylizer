@@ -1,4 +1,4 @@
-package com.karen.moneylizer.useraccount.impl;
+package com.karen.moneylizer.core.service.impl;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -7,6 +7,7 @@ import java.util.Date;
 
 import javax.persistence.EntityExistsException;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,13 +17,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
+import com.karen.moneylizer.core.entity.user.UserEntity;
+import com.karen.moneylizer.core.entity.useraccount.UserAccountEntity;
+import com.karen.moneylizer.core.repository.UserAccountRepository;
+import com.karen.moneylizer.core.service.UserAccountService;
 import com.karen.moneylizer.security.SecurityConstants;
-import com.karen.moneylizer.user.UserEntity;
-import com.karen.moneylizer.useraccount.UserAccountEntity;
-import com.karen.moneylizer.useraccount.UserAccountRepository;
-import com.karen.moneylizer.useraccount.UserAccountService;
 
+@Service
+@Transactional
 public class UserAccountServiceImpl implements UserAccountService {
 
 	@Autowired

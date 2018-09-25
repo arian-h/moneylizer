@@ -1,15 +1,13 @@
-package com.karen.moneylizer.useraccount;
+package com.karen.moneylizer.core.service;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
-@Service
-@Transactional
+import com.karen.moneylizer.core.entity.useraccount.UserAccountEntity;
+
 public interface UserAccountService extends UserDetailsService {
 
 	/*

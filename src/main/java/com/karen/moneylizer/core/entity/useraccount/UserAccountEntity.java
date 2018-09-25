@@ -1,4 +1,4 @@
-package com.karen.moneylizer.useraccount;
+package com.karen.moneylizer.core.entity.useraccount;
 
 import java.util.Collection;
 
@@ -9,15 +9,13 @@ import javax.persistence.Id;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.karen.moneylizer.user.UserEntity;
+import com.karen.moneylizer.core.entity.user.UserEntity;
 
 @Entity
 @Table(name="user_account_entity")
@@ -28,23 +26,19 @@ public class UserAccountEntity implements UserDetails {
 	private final static String ROLE_USER  = "ROLE_USER";
 
 	@Id
-	@NotBlank
 	private String id;
 
-	@NotBlank
 	private String username;
 
-	@NotBlank
 	private String password;
 
-	@NotNull
 	@MapsId
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private UserEntity user;
 
 	public UserAccountEntity(final String username, final String password) {
-		this.password = password;
-		this.username = username;
+		this.password = password.trim();
+		this.username = username.trim();
 	}
 
 	public UserAccountEntity() {}

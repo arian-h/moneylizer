@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.stereotype.Component;
 
-import com.karen.moneylizer.useraccount.UserAccountService;
+import com.karen.moneylizer.core.service.UserAccountService;
 
 @Component
 public class JwtAuthenticationFilter extends

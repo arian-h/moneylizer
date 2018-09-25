@@ -15,7 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.karen.moneylizer.useraccount.UserAccountService;
+import com.karen.moneylizer.core.service.UserAccountService;
 
 @EnableWebSecurity
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {

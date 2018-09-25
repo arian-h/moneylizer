@@ -1,4 +1,4 @@
-package com.karen.moneylizer.utils;
+package com.karen.moneylizer.core.utils;
 
 import java.io.Serializable;
 import java.util.Properties;
