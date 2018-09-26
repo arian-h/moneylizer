@@ -68,4 +68,5 @@ dependencies {
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
     compile group: 'org.springframework.security', name: 'spring-security-config', version: '5.0.7.RELEASE'
     compile group: 'org.springframework.security', name: 'spring-security-web', version: '5.0.7.RELEASE'
+	compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
 }

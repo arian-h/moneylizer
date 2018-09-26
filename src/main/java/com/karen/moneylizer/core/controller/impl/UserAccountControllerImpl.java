@@ -1,11 +1,11 @@
 package com.karen.moneylizer.core.controller.impl;
 
-import java.io.IOException;
-
+import javax.persistence.EntityExistsException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,14 +26,14 @@ public class UserAccountControllerImpl implements UserAccountController {
 
 	@Override
 	public UserAccountEntity login(@Valid @RequestBody UserAccountEntity account,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response) throws BadCredentialsException {
 		return userAccountService.authenticateUserAndSetResponsenHeader(
 				account.getUsername(), account.getPassword(), response);
 	}
 
 	@Override
 	public UserAccountEntity create(@Valid @RequestBody UserAccountEntity userAccount,
-			HttpServletResponse response) {
+			HttpServletResponse response) throws EntityExistsException {
 		String username = userAccount.getUsername();
 		String password = userAccount.getPassword();
 		userAccountService.saveIfNotExists(username, password);

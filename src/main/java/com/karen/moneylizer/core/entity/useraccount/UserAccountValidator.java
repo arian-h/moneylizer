@@ -2,6 +2,7 @@ package com.karen.moneylizer.core.entity.useraccount;
 
 import java.util.regex.Pattern;
 
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -16,6 +17,11 @@ public class UserAccountValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		UserAccountEntity userAccount = (UserAccountEntity) target;
 		String password = userAccount.getPassword();
+		String username = userAccount.getUsername();
+		EmailValidator emailValidator = EmailValidator.getInstance();
+		if (!emailValidator.isValid(username)) {
+			errors.reject("Username must be a valid email address");
+		}
     	if (password.length() > 30 || password.length() < 8) {
     		errors.reject("Password must be at least 8 and at most 30 characters");
     	}

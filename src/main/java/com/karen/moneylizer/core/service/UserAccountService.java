@@ -1,5 +1,6 @@
 package com.karen.moneylizer.core.service;
 
+import javax.persistence.EntityExistsException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,15 +17,15 @@ public interface UserAccountService extends UserDetailsService {
 	public UserAccountEntity loadUserByUsername(String username)
 			throws UsernameNotFoundException;
 
-	public void saveIfNotExists(String username, String password);
+	public void saveIfNotExists(String username, String password) throws EntityExistsException;
 
 	/*
 	 * Validates credentials and set the response header with the JWT token
 	 * 
 	 * @return id of the authenticated user
 	 */
-	public UserAccountEntity authenticateUserAndSetResponsenHeader(String username,
-			String password, HttpServletResponse response)
+	public UserAccountEntity authenticateUserAndSetResponsenHeader(
+			String username, String password, HttpServletResponse response)
 			throws BadCredentialsException;
 
 }

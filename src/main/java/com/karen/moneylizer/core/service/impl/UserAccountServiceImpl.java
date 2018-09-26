@@ -43,25 +43,25 @@ public class UserAccountServiceImpl implements UserAccountService {
 			throws UsernameNotFoundException {
 		UserAccountEntity account = userAccountRepository
 				.findByUsername(username);
-		if (account != null) {
-			return account;
+		if (account == null) {
+			throw new UsernameNotFoundException(String.format(
+					"User %s was not found", username));
 		}
-		throw new UsernameNotFoundException(String.format(
-				"User %s was not found", username));
+		return account;
 	}
 
 	@Override
-	public void saveIfNotExists(String username, String password) {
-		if (!userAccountRepository.existsByUsername(username)) {
-			UserEntity user = new UserEntity();
-			UserAccountEntity userAccount = new UserAccountEntity(username,
-					passwordEncoder.encode(password));
-			userAccount.setUser(user);
-			userAccountRepository.save(userAccount);
-		} else {
+	public void saveIfNotExists(String username, String password)
+			throws EntityExistsException {
+		if (userAccountRepository.existsByUsername(username)) {
 			throw new EntityExistsException(String.format(
-					"Username %s is not available", username));			
+					"Username %s is not available", username));
 		}
+		UserEntity user = new UserEntity();
+		UserAccountEntity userAccount = new UserAccountEntity(username,
+				passwordEncoder.encode(password));
+		userAccount.setUser(user);
+		userAccountRepository.save(userAccount);
 	}
 
 	@Override
