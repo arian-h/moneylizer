@@ -15,11 +15,13 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.karen.moneylizer.core.entity.user.UserEntity;
 
 @Entity
 @Table(name="user_account_entity")
 @JsonDeserialize(using = UserAccountDeserializer.class)
+@JsonSerialize(using = UserAccountSerializer.class)
 public class UserAccountEntity implements UserDetails {
 
 	private static final long serialVersionUID = -1662173405386513224L;

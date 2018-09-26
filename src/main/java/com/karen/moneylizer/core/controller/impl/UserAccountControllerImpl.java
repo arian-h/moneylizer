@@ -25,14 +25,14 @@ public class UserAccountControllerImpl implements UserAccountController {
 	private UserAccountService userAccountService;
 
 	@Override
-	public String login(@Valid @RequestBody UserAccountEntity account,
+	public UserAccountEntity login(@Valid @RequestBody UserAccountEntity account,
 			HttpServletResponse response) throws IOException {
 		return userAccountService.authenticateUserAndSetResponsenHeader(
 				account.getUsername(), account.getPassword(), response);
 	}
 
 	@Override
-	public String create(@Valid @RequestBody UserAccountEntity userAccount,
+	public UserAccountEntity create(@Valid @RequestBody UserAccountEntity userAccount,
 			HttpServletResponse response) {
 		String username = userAccount.getUsername();
 		String password = userAccount.getPassword();

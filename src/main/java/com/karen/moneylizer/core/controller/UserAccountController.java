@@ -14,11 +14,11 @@ import com.karen.moneylizer.core.entity.useraccount.UserAccountEntity;
 public interface UserAccountController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String login(@Valid @RequestBody UserAccountEntity account,
+	public UserAccountEntity login(@Valid @RequestBody UserAccountEntity account,
 			HttpServletResponse response) throws IOException;
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-	public String create(@Valid @RequestBody UserAccountEntity userAccount,
+	public UserAccountEntity create(@Valid @RequestBody UserAccountEntity userAccount,
 			HttpServletResponse response);
 
 }

@@ -13,7 +13,6 @@ public interface UserAccountService extends UserDetailsService {
 	/*
 	 * it should have been called "loadUserAccountByUsername"
 	 */
-	@Override
 	public UserAccountEntity loadUserByUsername(String username)
 			throws UsernameNotFoundException;
 
@@ -24,7 +23,7 @@ public interface UserAccountService extends UserDetailsService {
 	 * 
 	 * @return id of the authenticated user
 	 */
-	public String authenticateUserAndSetResponsenHeader(String username,
+	public UserAccountEntity authenticateUserAndSetResponsenHeader(String username,
 			String password, HttpServletResponse response)
 			throws BadCredentialsException;
 

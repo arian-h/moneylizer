@@ -65,7 +65,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	@Override
-	public String authenticateUserAndSetResponsenHeader(String username,
+	public UserAccountEntity authenticateUserAndSetResponsenHeader(String username,
 			String password, HttpServletResponse response)
 			throws BadCredentialsException {
 		Authentication authentication = authenticationManager
@@ -79,8 +79,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 						generateJwtToken(username)));
 		SecurityContextHolder.getContext()
 				.setAuthentication(authentication);
-		return ((UserAccountEntity) (authentication.getPrincipal()))
-				.getId();
+		return (UserAccountEntity) authentication.getPrincipal();
 	}
 
 	private String generateJwtToken(String username) {
