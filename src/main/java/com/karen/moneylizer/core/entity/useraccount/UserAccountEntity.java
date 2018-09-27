@@ -14,13 +14,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.karen.moneylizer.core.entity.user.UserEntity;
 
 @Entity
 @Table(name="user_account_entity")
-@JsonDeserialize(using = UserAccountDeserializer.class)
 @JsonSerialize(using = UserAccountSerializer.class)
 public class UserAccountEntity implements UserDetails {
 
@@ -38,7 +38,8 @@ public class UserAccountEntity implements UserDetails {
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private UserEntity user;
 
-	public UserAccountEntity(final String username, final String password) {
+	@JsonCreator
+	public UserAccountEntity(@JsonProperty(value="username", required=true) final String username, @JsonProperty(value="password", required=true) final String password) {
 		this.password = password.trim();
 		this.username = username.trim();
 	}

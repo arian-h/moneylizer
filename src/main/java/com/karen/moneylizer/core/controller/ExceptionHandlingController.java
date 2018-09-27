@@ -9,12 +9,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+
 @ControllerAdvice
 public class ExceptionHandlingController {
 
 	@ExceptionHandler(value = { MethodArgumentNotValidException.class,
-			EntityExistsException.class, BadCredentialsException.class })
-	public ResponseEntity<ExceptionResponse> invalidInput(RuntimeException ex) {
+			EntityExistsException.class, BadCredentialsException.class, MismatchedInputException.class })
+	public ResponseEntity<ExceptionResponse> invalidInput(Exception ex) {
 		ExceptionResponse response = new ExceptionResponse();
 		response.setErrorCode("BAD_REQUEST");
 		response.setErrorMessage(ex.getMessage());
