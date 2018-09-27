@@ -14,14 +14,27 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 @ControllerAdvice
 public class ExceptionHandlingController {
 
-	@ExceptionHandler(value = { MethodArgumentNotValidException.class,
-			EntityExistsException.class, BadCredentialsException.class, MismatchedInputException.class })
+	@ExceptionHandler(value = { EntityExistsException.class, BadCredentialsException.class })
 	public ResponseEntity<ExceptionResponse> invalidInput(Exception ex) {
+		return createErrorResponse(ex.getMessage());
+	}
+
+	@ExceptionHandler(value = { MismatchedInputException.class })
+	public ResponseEntity<ExceptionResponse> invalidInput(MismatchedInputException ex) {
+		return createErrorResponse(((MismatchedInputException) ex).getOriginalMessage());
+	}
+
+	@ExceptionHandler(value = { MethodArgumentNotValidException.class })
+	public ResponseEntity<ExceptionResponse> invalidInput(MethodArgumentNotValidException ex) {
+		return createErrorResponse(ex.getBindingResult().getAllErrors().get(0).getCode());
+	}
+
+	private ResponseEntity<ExceptionResponse> createErrorResponse(
+			String errorMessage) {
 		ExceptionResponse response = new ExceptionResponse();
 		response.setErrorCode("BAD_REQUEST");
-		response.setErrorMessage(ex.getMessage());
+		response.setErrorMessage(errorMessage);
 		return new ResponseEntity<ExceptionResponse>(response,
 				HttpStatus.BAD_REQUEST);
 	}
-
 }
