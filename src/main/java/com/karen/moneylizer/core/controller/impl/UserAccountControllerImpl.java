@@ -36,7 +36,7 @@ public class UserAccountControllerImpl implements UserAccountController {
 			HttpServletResponse response) throws EntityExistsException {
 		String username = userAccount.getUsername();
 		String password = userAccount.getPassword();
-		userAccountService.saveIfNotExists(username, password);
+		userAccountService.saveIfNotExistsOrExpired(username, password);
 		return userAccountService.authenticateUserAndSetResponsenHeader(
 				username, password, response);
 	}

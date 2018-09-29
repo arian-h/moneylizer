@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.karen.moneylizer.core.service.InactiveAccountException;
 
 @ControllerAdvice
 public class ExceptionHandlingController {
@@ -27,6 +28,11 @@ public class ExceptionHandlingController {
 	@ExceptionHandler(value = { MethodArgumentNotValidException.class })
 	public ResponseEntity<ExceptionResponse> invalidInput(MethodArgumentNotValidException ex) {
 		return createErrorResponse(ex.getBindingResult().getAllErrors().get(0).getCode());
+	}
+
+	@ExceptionHandler(value = { InactiveAccountException.class })
+	public ResponseEntity<ExceptionResponse> invalidInput(InactiveAccountException ex) {
+		return createErrorResponse(ex.getMessage());
 	}
 
 	private ResponseEntity<ExceptionResponse> createErrorResponse(

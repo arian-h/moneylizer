@@ -26,6 +26,7 @@ public class UserAccountEntity implements UserDetails {
 
 	private static final long serialVersionUID = -1662173405386513224L;
 	private final static String ROLE_USER  = "ROLE_USER";
+	private final static long EXPIRATION_TIME = 20 * 1000;
 
 	@Id
 	private String id;
@@ -33,6 +34,10 @@ public class UserAccountEntity implements UserDetails {
 	private String username;
 
 	private String password;
+
+	private boolean isActive;
+
+	private long createTime;
 
 	@MapsId
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -42,6 +47,8 @@ public class UserAccountEntity implements UserDetails {
 	public UserAccountEntity(@JsonProperty(value="username", required=true) final String username, @JsonProperty(value="password", required=true) final String password) {
 		this.password = password.trim();
 		this.username = username.trim();
+		this.isActive = false;
+		this.createTime = System.currentTimeMillis();
 	}
 
 	public UserAccountEntity() {}
@@ -89,4 +96,15 @@ public class UserAccountEntity implements UserDetails {
 		return id;
 	}
 
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public boolean isExpired() {
+		return !this.isActive() && System.currentTimeMillis() - this.createTime > EXPIRATION_TIME;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
 }

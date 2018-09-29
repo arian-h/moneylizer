@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import com.karen.moneylizer.core.entity.user.UserEntity;
 import com.karen.moneylizer.core.entity.useraccount.UserAccountEntity;
 import com.karen.moneylizer.core.repository.UserAccountRepository;
+import com.karen.moneylizer.core.service.InactiveAccountException;
 import com.karen.moneylizer.core.service.UserAccountService;
 import com.karen.moneylizer.security.SecurityConstants;
 
@@ -40,27 +41,38 @@ public class UserAccountServiceImpl implements UserAccountService {
 
 	@Override
 	public UserAccountEntity loadUserByUsername(String username)
-			throws UsernameNotFoundException {
-		UserAccountEntity account = userAccountRepository
-				.findByUsername(username);
-		if (account == null) {
-			throw new UsernameNotFoundException(String.format(
-					"User %s was not found", username));
+			throws InactiveAccountException, UsernameNotFoundException {
+		UserAccountEntity userAccount = userAccountRepository.findByUsername(username);
+		if (userAccount == null) {
+			throw new UsernameNotFoundException(String.format("User %s was not found", username));
+		} else if (userAccount.isExpired()) {
+			userAccountRepository.delete(userAccount);
+			throw new UsernameNotFoundException(String.format("User %s was not found", username)); 
+		} else if (!userAccount.isActive()) {
+			throw new InactiveAccountException("Your account is inactive");
 		}
-		return account;
+		return userAccount;
 	}
 
 	@Override
-	public void saveIfNotExists(String username, String password)
+	public void saveIfNotExistsOrExpired(String username, String password)
 			throws EntityExistsException {
-		if (userAccountRepository.existsByUsername(username)) {
-			throw new EntityExistsException(String.format(
-					"Username %s is not available", username));
+		UserAccountEntity userAccount = userAccountRepository.findByUsername(username);
+		if (userAccount != null) {
+			if (userAccount.isExpired()) {
+				try {
+					userAccountRepository.delete(userAccount);					
+				} catch (Exception e) {
+					System.out.println(e.toString());
+				}
+			} else {
+				throw new EntityExistsException(String.format(
+						"Username %s is not available", username));				
+			}
 		}
-		UserEntity user = new UserEntity();
-		UserAccountEntity userAccount = new UserAccountEntity(username,
+		userAccount = new UserAccountEntity(username,
 				passwordEncoder.encode(password));
-		userAccount.setUser(user);
+		userAccount.setUser(new UserEntity());
 		userAccountRepository.save(userAccount);
 	}
 

@@ -15,9 +15,13 @@ public interface UserAccountService extends UserDetailsService {
 	 * it should have been called "loadUserAccountByUsername"
 	 */
 	public UserAccountEntity loadUserByUsername(String username)
-			throws UsernameNotFoundException;
+			throws InactiveAccountException, UsernameNotFoundException;
 
-	public void saveIfNotExists(String username, String password) throws EntityExistsException;
+	/*
+	 * Save if username is not taken or it's expired before activation
+	 */
+	public void saveIfNotExistsOrExpired(String username, String password)
+			throws EntityExistsException;
 
 	/*
 	 * Validates credentials and set the response header with the JWT token
