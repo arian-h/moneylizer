@@ -23,9 +23,6 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserAccountService userAccountService;
 
-	@Autowired
-	private JwtAuthenticationFilter jwtAuthenticationFilter;
-
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -45,7 +42,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 				.disable()
 				// we must specify ordering for our custom filter, otherwise it
 				// doesn't work
-				.addFilterAfter(jwtAuthenticationFilter,
+				.addFilterAfter(jwtAuthenticationFilter(),
 						UsernamePasswordAuthenticationFilter.class)
 				// we don't need Session, as we are using jwt instead. Sessions
 				// are harder to scale and manage
@@ -71,6 +68,11 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(userAccountService).passwordEncoder(
 				passwordEncoder());
 	}
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
+    }
 
 	/*
 	 * By default, spring boot adds custom filters to the filter chain which
