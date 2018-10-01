@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.karen.moneylizer.core.entity.user.UserEntity;
+import com.karen.moneylizer.core.entity.userAccountActivityCodeEntity.UserAccountActivityCodeEntity;
 import com.karen.moneylizer.core.utils.RandomAlphanumericIdGenerator;
 
 @Entity

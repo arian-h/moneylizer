@@ -20,7 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.karen.moneylizer.core.entity.user.UserEntity;
-import com.karen.moneylizer.core.entity.useraccount.UserAccountActivityCodeEntity;
+import com.karen.moneylizer.core.entity.userAccountActivityCodeEntity.UserAccountActivityCodeEntity;
 import com.karen.moneylizer.core.entity.useraccount.UserAccountEntity;
 import com.karen.moneylizer.core.repository.UserAccountRepository;
 import com.karen.moneylizer.core.service.InactiveAccountException;

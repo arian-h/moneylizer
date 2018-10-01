@@ -1,4 +1,4 @@
-package com.karen.moneylizer.core.entity.useraccount;
+package com.karen.moneylizer.core.entity.userAccountActivityCodeEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -7,6 +7,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.RandomStringUtils;
+
+import com.karen.moneylizer.core.entity.useraccount.UserAccountEntity;
 
 @Entity
 @Table(name="user_account_activity_code_entity")
