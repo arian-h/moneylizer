@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.karen.moneylizer.core.entity.user.UserEntity;
+import com.karen.moneylizer.core.entity.useraccount.UserAccountActivityCodeEntity;
 import com.karen.moneylizer.core.entity.useraccount.UserAccountEntity;
 import com.karen.moneylizer.core.repository.UserAccountRepository;
 import com.karen.moneylizer.core.service.InactiveAccountException;
@@ -60,11 +61,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		UserAccountEntity userAccount = userAccountRepository.findByUsername(username);
 		if (userAccount != null) {
 			if (userAccount.isExpired()) {
-				try {
-					userAccountRepository.delete(userAccount);					
-				} catch (Exception e) {
-					System.out.println(e.toString());
-				}
+				userAccountRepository.delete(userAccount);					
 			} else {
 				throw new EntityExistsException(String.format(
 						"Username %s is not available", username));				
@@ -72,7 +69,12 @@ public class UserAccountServiceImpl implements UserAccountService {
 		}
 		userAccount = new UserAccountEntity(username,
 				passwordEncoder.encode(password));
-		userAccount.setUser(new UserEntity());
+		UserEntity user = new UserEntity();
+		user.setUserAccount(userAccount);
+		userAccount.setUser(user);
+		UserAccountActivityCodeEntity activityCode = new UserAccountActivityCodeEntity();
+		activityCode.setUserAccount(userAccount);
+		userAccount.setActivityCode(activityCode);
 		userAccountRepository.save(userAccount);
 	}
 

@@ -15,12 +15,12 @@ import org.hibernate.type.Type;
 public class RandomAlphanumericIdGenerator implements IdentifierGenerator,
 		Configurable {
 
-	public static final String generatorName = "RandomAlphanumericIdGenerator";
-
+	public final static String generatorName = "RandomAlphanumericIdGenerator";
+	private final static int RANDOM_STRING_LENGTH = 10;
 	@Override
 	public Serializable generate(SharedSessionContractImplementor session,
 			Object object) throws HibernateException {
-		return RandomStringUtils.randomAlphanumeric(10);
+		return RandomStringUtils.randomAlphanumeric(RANDOM_STRING_LENGTH);
 	}
 
 	@Override
