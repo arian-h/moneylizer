@@ -11,7 +11,6 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,10 +19,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.karen.moneylizer.core.entity.user.UserEntity;
-import com.karen.moneylizer.core.entity.userAccountActivityCodeEntity.UserAccountActivityCodeEntity;
-import com.karen.moneylizer.core.entity.useraccount.UserAccountEntity;
+import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
+import com.karen.moneylizer.core.entity.userAccountActivationCode.UserAccountActivationCodeEntity;
+import com.karen.moneylizer.core.repository.UserAccountActivationCodeRepository;
 import com.karen.moneylizer.core.repository.UserAccountRepository;
+import com.karen.moneylizer.core.service.AccountActiveException;
+import com.karen.moneylizer.core.service.BadActivationCodeException;
 import com.karen.moneylizer.core.service.InactiveAccountException;
+import com.karen.moneylizer.core.service.InvalidCredentialsException;
 import com.karen.moneylizer.core.service.UserAccountService;
 import com.karen.moneylizer.security.SecurityConstants;
 
@@ -35,22 +38,19 @@ public class UserAccountServiceImpl implements UserAccountService {
 	private UserAccountRepository userAccountRepository;
 
 	@Autowired
+	private UserAccountActivationCodeRepository userAccountActivationCodeRepository;
+
+	@Autowired
 	private AuthenticationManager authenticationManager;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Override
-	public UserAccountEntity loadUserByUsername(String username)
-			throws InactiveAccountException, UsernameNotFoundException {
+	public UserAccountEntity loadUserByUsername(String username) {
 		UserAccountEntity userAccount = userAccountRepository.findByUsername(username);
 		if (userAccount == null) {
 			throw new UsernameNotFoundException(String.format("User %s was not found", username));
-		} else if (userAccount.isExpired()) {
-			userAccountRepository.delete(userAccount);
-			throw new UsernameNotFoundException(String.format("User %s was not found", username)); 
-		} else if (!userAccount.isActive()) {
-			throw new InactiveAccountException("Your account is inactive");
 		}
 		return userAccount;
 	}
@@ -60,7 +60,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 			throws EntityExistsException {
 		UserAccountEntity userAccount = userAccountRepository.findByUsername(username);
 		if (userAccount != null) {
-			if (userAccount.isExpired()) {
+			if (userAccount.isActivationCodeExpired()) {
 				userAccountRepository.delete(userAccount);					
 			} else {
 				throw new EntityExistsException(String.format(
@@ -72,21 +72,26 @@ public class UserAccountServiceImpl implements UserAccountService {
 		UserEntity user = new UserEntity();
 		user.setUserAccount(userAccount);
 		userAccount.setUser(user);
-		UserAccountActivityCodeEntity activityCode = new UserAccountActivityCodeEntity();
+		UserAccountActivationCodeEntity activityCode = new UserAccountActivationCodeEntity();
 		activityCode.setUserAccount(userAccount);
-		userAccount.setActivityCode(activityCode);
+		userAccount.setActivationCode(activityCode);
 		userAccountRepository.save(userAccount);
 	}
 
 	@Override
 	public UserAccountEntity authenticateUserAndSetResponsenHeader(String username,
 			String password, HttpServletResponse response)
-			throws BadCredentialsException {
+			throws InvalidCredentialsException, InactiveAccountException {
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(username,
 						password));
-		if (authentication == null) {
-			throw new BadCredentialsException("Bad username/password presented");
+		UserAccountEntity userAccount = userAccountRepository.findByUsername(username);		
+		if (userAccount.isActivationCodeExpired()) {
+			userAccountRepository.delete(userAccount);
+			throw new InvalidCredentialsException();
+		}
+		if (!userAccount.isActive()) {
+			throw new InactiveAccountException(String.format("User %s is inactive", username));
 		}
 		response.addHeader(SecurityConstants.AUTHENTICATION_HEADER, String
 				.format("%s %s", SecurityConstants.BEARER,
@@ -105,5 +110,27 @@ public class UserAccountServiceImpl implements UserAccountService {
 								+ SecurityConstants.EXPIRATIONTIME))
 				.signWith(SignatureAlgorithm.HS512,
 						SecurityConstants.JWT_SECRET).compact();
+	}
+
+	@Override
+	public void activateAccount(String username, String activationCode)
+			throws AccountActiveException, BadActivationCodeException {
+		UserAccountEntity userAccount = userAccountRepository.findByUsername(username);
+		if (userAccount == null) {
+			throw new UsernameNotFoundException(String.format("User %s was not found", username));
+		} else if (userAccount.isActive()) {
+			throw new AccountActiveException(String.format(
+					"User %s is already active", username));
+		}
+		if (userAccount.isActivationCodeExpired()) {
+			userAccountRepository.delete(userAccount);
+		} else {
+			if (!userAccount.getActivationCode().equals(activationCode)) {
+				throw new BadActivationCodeException();
+			}
+			userAccount.activate();
+			userAccountRepository.save(userAccount);
+			userAccountActivationCodeRepository.deleteById(userAccount.getId());
+		}
 	}
 }

@@ -3,19 +3,16 @@ package com.karen.moneylizer.core.service;
 import javax.persistence.EntityExistsException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.karen.moneylizer.core.entity.useraccount.UserAccountEntity;
+import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 
 public interface UserAccountService extends UserDetailsService {
 
 	/*
 	 * it should have been called "loadUserAccountByUsername"
 	 */
-	public UserAccountEntity loadUserByUsername(String username)
-			throws InactiveAccountException, UsernameNotFoundException;
+	public UserAccountEntity loadUserByUsername(String username);
 
 	/*
 	 * Save if username is not taken or it's expired before activation
@@ -30,6 +27,12 @@ public interface UserAccountService extends UserDetailsService {
 	 */
 	public UserAccountEntity authenticateUserAndSetResponsenHeader(
 			String username, String password, HttpServletResponse response)
-			throws BadCredentialsException;
+			throws InvalidCredentialsException, InactiveAccountException;
+
+	/*
+	 * Validates the activationCode and activates the account
+	 */
+	public void activateAccount(String username, String activationCode)
+			throws AccountActiveException, BadActivationCodeException;
 
 }

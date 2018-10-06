@@ -1,4 +1,4 @@
-package com.karen.moneylizer.core.entity.useraccount;
+package com.karen.moneylizer.core.entity.userAccount;
 
 import java.util.Collection;
 
@@ -17,20 +17,22 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.karen.moneylizer.core.entity.user.UserEntity;
-import com.karen.moneylizer.core.entity.userAccountActivityCodeEntity.UserAccountActivityCodeEntity;
+import com.karen.moneylizer.core.entity.userAccountActivationCode.UserAccountActivationCodeEntity;
 import com.karen.moneylizer.core.utils.RandomAlphanumericIdGenerator;
 
 @Entity
 @Table(name="user_account_entity")
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(using = UserAccountSerializer.class)
 public class UserAccountEntity implements UserDetails {
 
 	private static final long serialVersionUID = -1662173405386513224L;
 	private final static String ROLE_USER  = "ROLE_USER";
-	private final static long EXPIRATION_TIME = 20 * 1000;
+	private final static long EXPIRATION_TIME = 40 * 1000;
 
 	@Id
 	@GeneratedValue(generator = RandomAlphanumericIdGenerator.generatorName)
@@ -41,8 +43,6 @@ public class UserAccountEntity implements UserDetails {
 
 	private String password;
 
-	private boolean isActive;
-
 	private long createTime;
 
 	@PrimaryKeyJoinColumn
@@ -51,13 +51,13 @@ public class UserAccountEntity implements UserDetails {
 
 	@PrimaryKeyJoinColumn
 	@OneToOne(mappedBy= "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private UserAccountActivityCodeEntity activityCode;
+	private UserAccountActivationCodeEntity activationCode;
 
 	@JsonCreator
 	public UserAccountEntity(@JsonProperty(value="username", required=true) final String username, @JsonProperty(value="password", required=true) final String password) {
 		this.password = password.trim();
 		this.username = username.trim();
-		this.isActive = false;
+		this.activationCode = null;
 		this.createTime = System.currentTimeMillis();
 	}
 
@@ -106,23 +106,27 @@ public class UserAccountEntity implements UserDetails {
 		return id;
 	}
 
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
+	public String getActivationCode() {
+		if (this.activationCode == null) {
+			return null;
+		}
+		return activationCode.getActivationCode();
 	}
 
-	public boolean isExpired() {
-		return !this.isActive() && System.currentTimeMillis() - this.createTime > EXPIRATION_TIME;
+	public boolean isActivationCodeExpired() {
+		return this.activationCode != null
+				&& System.currentTimeMillis() - this.createTime > EXPIRATION_TIME;		
 	}
 
 	public boolean isActive() {
-		return isActive;
-	}
-	
-	public UserAccountActivityCodeEntity getActivityCode() {
-		return activityCode;
+		return this.activationCode == null;
 	}
 
-	public void setActivityCode(UserAccountActivityCodeEntity activityCode) {
-		this.activityCode = activityCode;
+	public void activate() {
+		this.activationCode = null;
+	}
+
+	public void setActivationCode(UserAccountActivationCodeEntity activityCode) {
+		this.activationCode = activityCode;
 	}
 }

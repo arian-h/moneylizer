@@ -1,4 +1,4 @@
-package com.karen.moneylizer.core.entity.useraccount;
+package com.karen.moneylizer.core.entity.userAccount;
 
 import java.io.IOException;
 

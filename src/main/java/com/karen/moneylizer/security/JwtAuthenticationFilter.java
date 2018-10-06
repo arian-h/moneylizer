@@ -16,9 +16,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
+import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 import com.karen.moneylizer.core.service.UserAccountService;
 
 public class JwtAuthenticationFilter extends
@@ -55,11 +55,11 @@ public class JwtAuthenticationFilter extends
 				throw new BadCredentialsException(
 						"Bad username/password presented");
 			}
-			UserDetails user = userAccountService.loadUserByUsername(username);
-			if (user != null) {
+			UserAccountEntity userAccount = userAccountService.loadUserByUsername(username);
+			if (userAccount != null) {
 				return new UsernamePasswordAuthenticationToken(
-						user.getUsername(), user.getPassword(),
-						user.getAuthorities());
+						userAccount.getUsername(), userAccount.getPassword(),
+						userAccount.getAuthorities());
 			}
 		}
 		throw new BadCredentialsException("Bad username/password presented");

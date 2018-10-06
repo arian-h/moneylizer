@@ -2,17 +2,19 @@ package com.karen.moneylizer.core.controller.impl;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.karen.moneylizer.core.controller.ExceptionHandlingController;
 import com.karen.moneylizer.core.controller.ExceptionResponse;
+import com.karen.moneylizer.core.service.AccountActiveException;
 import com.karen.moneylizer.core.service.InactiveAccountException;
 
 @ControllerAdvice
 public class ExceptionHandlingControllerImpl implements ExceptionHandlingController {
-
+	//TODO fix this controller
 	@Override
 	public ResponseEntity<ExceptionResponse> invalidInput(Exception ex) {
 		return createErrorResponse(ex.getMessage());
@@ -20,7 +22,13 @@ public class ExceptionHandlingControllerImpl implements ExceptionHandlingControl
 
 	@Override
 	public ResponseEntity<ExceptionResponse> invalidInput(MismatchedInputException ex) {
+//		return createErrorResponse("Wrong request format");
 		return createErrorResponse(((MismatchedInputException) ex).getOriginalMessage());
+	}
+
+	@Override
+	public ResponseEntity<ExceptionResponse> invalidInput(UsernameNotFoundException ex) {
+		return createErrorResponse(((UsernameNotFoundException) ex).getMessage());
 	}
 
 	@Override
@@ -33,6 +41,11 @@ public class ExceptionHandlingControllerImpl implements ExceptionHandlingControl
 		return createErrorResponse(ex.getMessage());
 	}
 
+	@Override
+	public ResponseEntity<ExceptionResponse> invalidInput(AccountActiveException ex) {
+		return createErrorResponse(ex.getMessage());
+	}
+
 	private ResponseEntity<ExceptionResponse> createErrorResponse(
 			String errorMessage) {
 		ExceptionResponse response = new ExceptionResponse();
@@ -41,4 +54,5 @@ public class ExceptionHandlingControllerImpl implements ExceptionHandlingControl
 		return new ResponseEntity<ExceptionResponse>(response,
 				HttpStatus.BAD_REQUEST);
 	}
+
 }
