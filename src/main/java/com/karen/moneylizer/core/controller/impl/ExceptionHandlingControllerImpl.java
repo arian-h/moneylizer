@@ -9,12 +9,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.karen.moneylizer.core.controller.ExceptionHandlingController;
 import com.karen.moneylizer.core.controller.ExceptionResponse;
-import com.karen.moneylizer.core.service.AccountActiveException;
-import com.karen.moneylizer.core.service.InactiveAccountException;
 
 @ControllerAdvice
 public class ExceptionHandlingControllerImpl implements ExceptionHandlingController {
-	//TODO fix this controller
 	@Override
 	public ResponseEntity<ExceptionResponse> invalidInput(Exception ex) {
 		return createErrorResponse(ex.getMessage());
@@ -22,7 +19,6 @@ public class ExceptionHandlingControllerImpl implements ExceptionHandlingControl
 
 	@Override
 	public ResponseEntity<ExceptionResponse> invalidInput(MismatchedInputException ex) {
-//		return createErrorResponse("Wrong request format");
 		return createErrorResponse(((MismatchedInputException) ex).getOriginalMessage());
 	}
 
@@ -34,16 +30,6 @@ public class ExceptionHandlingControllerImpl implements ExceptionHandlingControl
 	@Override
 	public ResponseEntity<ExceptionResponse> invalidInput(MethodArgumentNotValidException ex) {
 		return createErrorResponse(ex.getBindingResult().getAllErrors().get(0).getCode());
-	}
-
-	@Override
-	public ResponseEntity<ExceptionResponse> invalidInput(InactiveAccountException ex) {
-		return createErrorResponse(ex.getMessage());
-	}
-
-	@Override
-	public ResponseEntity<ExceptionResponse> invalidInput(AccountActiveException ex) {
-		return createErrorResponse(ex.getMessage());
 	}
 
 	private ResponseEntity<ExceptionResponse> createErrorResponse(

@@ -91,7 +91,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 			throw new InvalidCredentialsException();
 		}
 		if (!userAccount.isActive()) {
-			throw new InactiveAccountException(String.format("User %s is inactive", username));
+			throw new InactiveAccountException(username);
 		}
 		response.addHeader(SecurityConstants.AUTHENTICATION_HEADER, String
 				.format("%s %s", SecurityConstants.BEARER,
@@ -119,8 +119,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		if (userAccount == null) {
 			throw new UsernameNotFoundException(String.format("User %s was not found", username));
 		} else if (userAccount.isActive()) {
-			throw new AccountActiveException(String.format(
-					"User %s is already active", username));
+			throw new AccountActiveException(username);
 		}
 		if (userAccount.isActivationCodeExpired()) {
 			userAccountRepository.delete(userAccount);

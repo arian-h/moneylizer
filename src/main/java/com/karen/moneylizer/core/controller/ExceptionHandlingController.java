@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.karen.moneylizer.core.service.AccountActiveException;
+import com.karen.moneylizer.core.service.BadActivationCodeException;
 import com.karen.moneylizer.core.service.InactiveAccountException;
 import com.karen.moneylizer.core.service.InvalidCredentialsException;
 
@@ -17,7 +18,8 @@ import com.karen.moneylizer.core.service.InvalidCredentialsException;
 public interface ExceptionHandlingController {
 
 	@ExceptionHandler(value = { EntityExistsException.class,
-			BadCredentialsException.class, InvalidCredentialsException.class })
+			BadCredentialsException.class, InvalidCredentialsException.class,
+			AccountActiveException.class, InactiveAccountException.class, BadActivationCodeException.class })
 	public ResponseEntity<ExceptionResponse> invalidInput(Exception ex);
 
 	@ExceptionHandler(value = { MismatchedInputException.class })
@@ -29,9 +31,4 @@ public interface ExceptionHandlingController {
 	@ExceptionHandler(value = { MethodArgumentNotValidException.class })
 	public ResponseEntity<ExceptionResponse> invalidInput(MethodArgumentNotValidException ex);
 
-	@ExceptionHandler(value = { InactiveAccountException.class })
-	public ResponseEntity<ExceptionResponse> invalidInput(InactiveAccountException ex);
-
-	@ExceptionHandler(value = {AccountActiveException.class})
-	public ResponseEntity<ExceptionResponse> invalidInput(AccountActiveException ex);
 }
