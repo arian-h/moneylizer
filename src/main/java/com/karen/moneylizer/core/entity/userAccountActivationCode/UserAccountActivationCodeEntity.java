@@ -29,6 +29,10 @@ public class UserAccountActivationCodeEntity {
 		this.activationCode = RandomStringUtils.randomAlphanumeric(ACTIVATION_CODE_LENGTH).toUpperCase();
 	}
 
+	public UserAccountActivationCodeEntity(String activationCode) {
+		this.activationCode = activationCode;
+	}
+
 	public UserAccountEntity getUserAccount() {
 		return userAccount;
 	}

@@ -10,11 +10,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
-import com.karen.moneylizer.core.entity.userAccountActivationCode.UserAccountActivationCodeDTO;
 import com.karen.moneylizer.core.service.AccountActiveException;
 import com.karen.moneylizer.core.service.AccountNotResetException;
-import com.karen.moneylizer.core.service.InvalidActivationCodeException;
 import com.karen.moneylizer.core.service.InactiveAccountException;
+import com.karen.moneylizer.core.service.InvalidActivationCodeException;
 import com.karen.moneylizer.core.service.InvalidCredentialsException;
 import com.karen.moneylizer.core.service.InvalidResetTokenException;
 
@@ -32,7 +31,7 @@ public interface UserAccountController {
 
 	@RequestMapping(value = "/activate", method = RequestMethod.POST)
 	public UserAccountEntity activate(
-			@Valid @RequestBody UserAccountActivationCodeDTO activationCode,
+			@Valid @RequestBody UserAccountEntity activationCode,
 			HttpServletResponse response) throws AccountActiveException,
 			InvalidActivationCodeException, InvalidCredentialsException,
 			InactiveAccountException;
@@ -41,7 +40,7 @@ public interface UserAccountController {
 	 * triggers reset process for existing and active accounts
 	 * for inactive accounts throw InactiveAccountException
 	 */
-	@RequestMapping(value = "/reset", method = RequestMethod.POST)
+	@RequestMapping(value = "/reset", method = RequestMethod.GET)
 	public void reset(@RequestParam(value = "username") String username,
 			HttpServletResponse response) throws InvalidCredentialsException,
 			InactiveAccountException;

@@ -15,16 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.karen.moneylizer.core.controller.UserAccountController;
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
-import com.karen.moneylizer.core.entity.userAccountActivationCode.UserAccountActivationCodeDTO;
 import com.karen.moneylizer.core.service.AccountActiveException;
 import com.karen.moneylizer.core.service.AccountNotResetException;
-import com.karen.moneylizer.core.service.InvalidActivationCodeException;
 import com.karen.moneylizer.core.service.InactiveAccountException;
+import com.karen.moneylizer.core.service.InvalidActivationCodeException;
 import com.karen.moneylizer.core.service.InvalidCredentialsException;
 import com.karen.moneylizer.core.service.InvalidResetTokenException;
 import com.karen.moneylizer.core.service.UserAccountService;
 import com.karen.moneylizer.core.validator.CompoundValidator;
-import com.karen.moneylizer.core.validator.UserAccountActivationCodeDTOValidator;
 import com.karen.moneylizer.core.validator.UserAccountValidator;
 
 @RestController
@@ -53,7 +51,7 @@ public class UserAccountControllerImpl implements UserAccountController {
 
 	@Override
 	public UserAccountEntity activate(
-			@Valid @RequestBody UserAccountActivationCodeDTO activationCode,
+			@Valid @RequestBody UserAccountEntity activationCode,
 			HttpServletResponse response) throws AccountActiveException,
 			InvalidActivationCodeException, InvalidCredentialsException,
 			InactiveAccountException {
@@ -84,8 +82,7 @@ public class UserAccountControllerImpl implements UserAccountController {
 	@InitBinder
 	public void binder(WebDataBinder binder) {
 		binder.addValidators(new CompoundValidator(new Validator[] {
-				new UserAccountValidator(),
-				new UserAccountActivationCodeDTOValidator() }));
+				new UserAccountValidator()}));
 	}
 
 }
