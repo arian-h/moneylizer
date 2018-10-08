@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.karen.moneylizer.core.entity.user.UserEntity;
 import com.karen.moneylizer.core.entity.userAccountActivationCode.UserAccountActivationCodeEntity;
+import com.karen.moneylizer.core.entity.userAccountResetCodeEntity.UserAccountResetCodeEntity;
 import com.karen.moneylizer.core.utils.RandomAlphanumericIdGenerator;
 
 @Entity
@@ -47,6 +48,10 @@ public class UserAccountEntity implements UserDetails {
 
 	@PrimaryKeyJoinColumn
 	@OneToOne(mappedBy= "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private UserAccountResetCodeEntity resetCode;
+
+	@PrimaryKeyJoinColumn
+	@OneToOne(mappedBy= "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private UserEntity user;
 
 	@PrimaryKeyJoinColumn
@@ -59,6 +64,7 @@ public class UserAccountEntity implements UserDetails {
 		this.username = username.trim();
 		this.activationCode = null;
 		this.createTime = System.currentTimeMillis();
+		this.resetCode = null;
 	}
 
 	public UserAccountEntity() {}
@@ -122,11 +128,30 @@ public class UserAccountEntity implements UserDetails {
 		return this.activationCode == null;
 	}
 
+	public boolean isReset() {
+		return this.resetCode != null;
+	}
+
 	public void activate() {
 		this.activationCode = null;
 	}
 
 	public void setActivationCode(UserAccountActivationCodeEntity activityCode) {
 		this.activationCode = activityCode;
+	}
+
+	public void setResetCode(UserAccountResetCodeEntity resetCode) {
+		this.resetCode = resetCode;
+	}
+
+	public String getResetCode() {
+		if (this.resetCode == null) {
+			return null;
+		}
+		return resetCode.getResetCode();
+	}
+
+	public void setPassword(String encode) {
+		
 	}
 }

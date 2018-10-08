@@ -33,6 +33,19 @@ public interface UserAccountService extends UserDetailsService {
 	 * Validates the activationCode and activates the account
 	 */
 	public void activateAccount(String username, String activationCode)
-			throws AccountActiveException, BadActivationCodeException;
+			throws AccountActiveException, InvalidActivationCodeException;
+
+	/*
+	 * Trigger password reset for a user account
+	 * Sends an email to the user with reset token in it
+	 */
+	public void triggerReset(String username) throws InactiveAccountException;
+
+	/*
+	 * Resets user password
+	 */
+	void reset(UserAccountEntity userAccountParam, String resetCodeParam)
+			throws InvalidResetTokenException, InvalidCredentialsException,
+			AccountNotResetException;
 
 }

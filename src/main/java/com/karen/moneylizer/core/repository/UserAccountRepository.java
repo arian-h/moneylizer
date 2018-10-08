@@ -7,8 +7,6 @@ import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 public interface UserAccountRepository extends
 		JpaRepository<UserAccountEntity, String> {
 
-	boolean existsByUsername(String username);
-
 	UserAccountEntity findByUsername(String username);
 
 }

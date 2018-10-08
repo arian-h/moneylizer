@@ -10,15 +10,18 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.karen.moneylizer.core.controller.UserAccountController;
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 import com.karen.moneylizer.core.entity.userAccountActivationCode.UserAccountActivationCodeDTO;
 import com.karen.moneylizer.core.service.AccountActiveException;
-import com.karen.moneylizer.core.service.BadActivationCodeException;
+import com.karen.moneylizer.core.service.AccountNotResetException;
+import com.karen.moneylizer.core.service.InvalidActivationCodeException;
 import com.karen.moneylizer.core.service.InactiveAccountException;
 import com.karen.moneylizer.core.service.InvalidCredentialsException;
+import com.karen.moneylizer.core.service.InvalidResetTokenException;
 import com.karen.moneylizer.core.service.UserAccountService;
 import com.karen.moneylizer.core.validator.CompoundValidator;
 import com.karen.moneylizer.core.validator.UserAccountActivationCodeDTOValidator;
@@ -52,7 +55,7 @@ public class UserAccountControllerImpl implements UserAccountController {
 	public UserAccountEntity activate(
 			@Valid @RequestBody UserAccountActivationCodeDTO activationCode,
 			HttpServletResponse response) throws AccountActiveException,
-			BadActivationCodeException, InvalidCredentialsException,
+			InvalidActivationCodeException, InvalidCredentialsException,
 			InactiveAccountException {
 		String code = activationCode.getActivationCode();
 		String username = activationCode.getUsername();
@@ -62,6 +65,21 @@ public class UserAccountControllerImpl implements UserAccountController {
 				username, password, response);
 	}
 
+	@Override
+	public void reset(String username,
+			HttpServletResponse response) throws InvalidCredentialsException,
+			InactiveAccountException {
+		userAccountService.triggerReset(username);
+	}
+
+	@Override
+	public void reset(@Valid @RequestBody UserAccountEntity userAccount,
+			@RequestParam String resetToken, HttpServletResponse response)
+			throws InvalidCredentialsException, InvalidResetTokenException,
+			AccountNotResetException {
+		userAccountService.reset(userAccount, resetToken);
+	}
+
 	//used to bind the validator to the incoming request
 	@InitBinder
 	public void binder(WebDataBinder binder) {
@@ -69,4 +87,5 @@ public class UserAccountControllerImpl implements UserAccountController {
 				new UserAccountValidator(),
 				new UserAccountActivationCodeDTOValidator() }));
 	}
+
 }
