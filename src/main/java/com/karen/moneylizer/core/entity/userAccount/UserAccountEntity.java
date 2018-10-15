@@ -27,7 +27,7 @@ import com.karen.moneylizer.core.utils.RandomAlphanumericIdGenerator;
 
 @Entity
 @Table(name="user_account_entity")
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true)//TODO: is it used anywhere?
 @JsonSerialize(using = UserAccountSerializer.class)
 public class UserAccountEntity implements UserDetails {
 

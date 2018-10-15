@@ -9,6 +9,7 @@ import javax.persistence.EntityExistsException;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.karen.moneylizer.RabbitMQConfiguration;
 import com.karen.moneylizer.core.entity.user.UserEntity;
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 import com.karen.moneylizer.core.entity.userAccountActivationCode.UserAccountActivationCodeEntity;
@@ -26,11 +28,12 @@ import com.karen.moneylizer.core.repository.UserAccountActivationCodeRepository;
 import com.karen.moneylizer.core.repository.UserAccountRepository;
 import com.karen.moneylizer.core.service.AccountActiveException;
 import com.karen.moneylizer.core.service.AccountNotResetException;
-import com.karen.moneylizer.core.service.InvalidActivationCodeException;
 import com.karen.moneylizer.core.service.InactiveAccountException;
+import com.karen.moneylizer.core.service.InvalidActivationCodeException;
 import com.karen.moneylizer.core.service.InvalidCredentialsException;
 import com.karen.moneylizer.core.service.InvalidResetTokenException;
 import com.karen.moneylizer.core.service.UserAccountService;
+import com.karen.moneylizer.emailServices.userAccountAuthenticationEmail.UserAccountActivationEmail;
 import com.karen.moneylizer.security.SecurityConstants;
 
 @Service
@@ -39,15 +42,14 @@ public class UserAccountServiceImpl implements UserAccountService {
 
 	@Autowired
 	private UserAccountRepository userAccountRepository;
-
 	@Autowired
 	private UserAccountActivationCodeRepository userAccountActivationCodeRepository;
-
 	@Autowired
 	private AuthenticationManager authenticationManager;
-
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
 
 	@Override
 	public UserAccountEntity loadUserByUsername(String username) {
@@ -71,6 +73,11 @@ public class UserAccountServiceImpl implements UserAccountService {
 						"Username %s is not available", username));				
 			}
 		}
+		UserAccountActivationEmail email = new UserAccountActivationEmail();
+		email.setRecipients(new String[]{"salam"});
+		email.setUsername("Salamalekom");
+		email.setSender("hello");
+		rabbitTemplate.convertAndSend(RabbitMQConfiguration.AUTHENTICATION_EMAILS_QUEUE, email);
 		userAccount = new UserAccountEntity(username,
 				passwordEncoder.encode(password));
 		UserEntity user = new UserEntity();

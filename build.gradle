@@ -69,4 +69,7 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-config', version: '5.0.7.RELEASE'
     compile group: 'org.springframework.security', name: 'spring-security-web', version: '5.0.7.RELEASE'
 	compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
+	compile group: 'com.rabbitmq', name: 'amqp-client', version: '5.4.3'
+	compile group: 'org.springframework.amqp', name: 'spring-rabbit', version: '2.0.6.RELEASE'
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-ses', version: '1.11.425'
 }
