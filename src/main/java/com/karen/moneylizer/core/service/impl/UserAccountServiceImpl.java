@@ -74,9 +74,10 @@ public class UserAccountServiceImpl implements UserAccountService {
 			}
 		}
 		UserAccountActivationEmail email = new UserAccountActivationEmail();
-		email.setRecipients(new String[]{"salam"});
+		email.setRecipients(new String[]{"yasaman.nourani@gmail.com"});
 		email.setUsername("Salamalekom");
-		email.setSender("hello");
+		email.setSender("aryan.hosseinzadeh@gmail.com");
+		email.setSubject("hello!!");
 		rabbitTemplate.convertAndSend(RabbitMQConfiguration.AUTHENTICATION_EMAILS_QUEUE, email);
 		userAccount = new UserAccountEntity(username,
 				passwordEncoder.encode(password));

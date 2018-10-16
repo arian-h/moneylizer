@@ -1,8 +1,10 @@
 package com.karen.moneylizer.emailServices;
 
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-import com.amazonaws.regions.Regions;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.Body;
@@ -12,18 +14,27 @@ import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import com.karen.moneylizer.emailServices.userAccountAuthenticationEmail.UserAccountAuthenticationEmail;
 
-@Component
+@Service
 public class EmailComposer {
+	
+	@Value("${aws.accessKeyId}")
+	private String awsId;
 
+	@Value("${aws.secretKey}")
+	private String awsKey;
+
+	@Value("${aws.region}")
+	private String region;
+	
 	public EmailComposer() {};
 
 	public void send(UserAccountAuthenticationEmail email) {
 		try {
+			BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsId, awsKey);
 			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder
 					.standard()
-					// Replace US_WEST_2 with the AWS Region you're using for
-					// Amazon SES.
-					.withRegion(Regions.US_WEST_2).build();
+					.withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+					.withRegion(region).build();
 			SendEmailRequest request = new SendEmailRequest()
 					.withDestination(
 							new Destination().withToAddresses(email
@@ -51,7 +62,7 @@ public class EmailComposer {
 					.withSource(email.getSender());
 			client.sendEmail(request);
 		} catch (Exception ex) {
-			// Todo add logging
+			// TODO add logging
 		}
 	}
 }
