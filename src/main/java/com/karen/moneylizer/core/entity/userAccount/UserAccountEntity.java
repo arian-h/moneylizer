@@ -17,7 +17,6 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.karen.moneylizer.core.entity.user.UserEntity;
@@ -27,7 +26,6 @@ import com.karen.moneylizer.core.utils.RandomAlphanumericIdGenerator;
 
 @Entity
 @Table(name="user_account_entity")
-@JsonIgnoreProperties(ignoreUnknown = true)//TODO: is it used anywhere?
 @JsonSerialize(using = UserAccountSerializer.class)
 public class UserAccountEntity implements UserDetails {
 

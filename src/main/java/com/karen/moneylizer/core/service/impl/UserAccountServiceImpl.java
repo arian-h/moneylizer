@@ -33,7 +33,8 @@ import com.karen.moneylizer.core.service.InvalidActivationCodeException;
 import com.karen.moneylizer.core.service.InvalidCredentialsException;
 import com.karen.moneylizer.core.service.InvalidResetTokenException;
 import com.karen.moneylizer.core.service.UserAccountService;
-import com.karen.moneylizer.emailServices.userAccountAuthenticationEmail.UserAccountActivationEmail;
+import com.karen.moneylizer.emailServices.userAccountAuthentication.UserAccountActivationEmail;
+import com.karen.moneylizer.emailServices.userAccountAuthentication.UserAccountResetEmail;
 import com.karen.moneylizer.security.SecurityConstants;
 
 @Service
@@ -73,20 +74,15 @@ public class UserAccountServiceImpl implements UserAccountService {
 						"Username %s is not available", username));				
 			}
 		}
-		UserAccountActivationEmail email = new UserAccountActivationEmail();
-		email.setRecipients(new String[]{"yasaman.nourani@gmail.com"});
-		email.setUsername("Salamalekom");
-		email.setSender("aryan.hosseinzadeh@gmail.com");
-		email.setSubject("hello!!");
-		rabbitTemplate.convertAndSend(RabbitMQConfiguration.AUTHENTICATION_EMAILS_QUEUE, email);
 		userAccount = new UserAccountEntity(username,
 				passwordEncoder.encode(password));
 		UserEntity user = new UserEntity();
 		user.setUserAccount(userAccount);
 		userAccount.setUser(user);
-		UserAccountActivationCodeEntity activityCode = new UserAccountActivationCodeEntity();
-		activityCode.setUserAccount(userAccount);
-		userAccount.setActivationCode(activityCode);
+		UserAccountActivationCodeEntity activationCode = new UserAccountActivationCodeEntity();
+		activationCode.setUserAccount(userAccount);
+		userAccount.setActivationCode(activationCode);
+		this.sendActivationCodeEmail(username, activationCode.getActivationCode());
 		userAccountRepository.save(userAccount);
 	}
 
@@ -112,17 +108,6 @@ public class UserAccountServiceImpl implements UserAccountService {
 		SecurityContextHolder.getContext()
 				.setAuthentication(authentication);
 		return (UserAccountEntity) authentication.getPrincipal();
-	}
-
-	private String generateJwtToken(String username) {
-		return Jwts
-				.builder()
-				.setSubject(username)
-				.setExpiration(
-						new Date(System.currentTimeMillis()
-								+ SecurityConstants.EXPIRATIONTIME))
-				.signWith(SignatureAlgorithm.HS512,
-						SecurityConstants.JWT_SECRET).compact();
 	}
 
 	@Override
@@ -153,8 +138,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		userAccount.setResetCode(resetCode);
 		resetCode.setUserAccount(userAccount);
 		userAccountRepository.save(userAccount);
-		// TODO send an email to the user with a link (including username and
-		// reset code) to the password reset page
+		this.sendResetCodeEmail(username, resetCode.getResetCode());
 	}
 
 	@Override
@@ -175,4 +159,30 @@ public class UserAccountServiceImpl implements UserAccountService {
 		userAccount.setPassword(passwordEncoder.encode(password));
 		userAccountRepository.save(userAccount);
 	}
+
+	private void sendActivationCodeEmail(String recipient, String activationCode) {
+		UserAccountActivationEmail email = new UserAccountActivationEmail();
+		email.setRecipients(new String[]{ recipient });
+		email.setActivationCode(activationCode);
+		rabbitTemplate.convertAndSend(RabbitMQConfiguration.AUTHENTICATION_EMAILS_QUEUE, email);
+	}
+
+	private void sendResetCodeEmail(String recipient, String resetCode) {
+		UserAccountResetEmail email = new UserAccountResetEmail();
+		email.setRecipients(new String[]{ recipient });
+		email.setResetCode(resetCode);
+		rabbitTemplate.convertAndSend(RabbitMQConfiguration.AUTHENTICATION_EMAILS_QUEUE, email);
+	}
+
+	private String generateJwtToken(String username) {
+		return Jwts
+				.builder()
+				.setSubject(username)
+				.setExpiration(
+						new Date(System.currentTimeMillis()
+								+ SecurityConstants.EXPIRATIONTIME))
+				.signWith(SignatureAlgorithm.HS512,
+						SecurityConstants.JWT_SECRET).compact();
+	}
+
 }

@@ -1,4 +1,4 @@
-package com.karen.moneylizer.emailServices;
+package com.karen.moneylizer.emailService;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,6 @@ import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
-import com.karen.moneylizer.emailServices.userAccountAuthenticationEmail.UserAccountAuthenticationEmail;
 
 @Service
 public class EmailComposer {
@@ -28,7 +27,7 @@ public class EmailComposer {
 	
 	public EmailComposer() {};
 
-	public void send(UserAccountAuthenticationEmail email) {
+	public void send(Email email) {
 		try {
 			BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsId, awsKey);
 			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder
