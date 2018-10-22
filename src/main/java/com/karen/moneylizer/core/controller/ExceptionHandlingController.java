@@ -10,16 +10,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.karen.moneylizer.core.service.AccountActiveException;
+import com.karen.moneylizer.core.service.AccountNotResetException;
 import com.karen.moneylizer.core.service.InvalidActivationCodeException;
 import com.karen.moneylizer.core.service.InactiveAccountException;
 import com.karen.moneylizer.core.service.InvalidCredentialsException;
+import com.karen.moneylizer.core.service.InvalidResetTokenException;
 
 
 public interface ExceptionHandlingController {
 
-	@ExceptionHandler(value = { EntityExistsException.class, UsernameNotFoundException.class,
-			BadCredentialsException.class, InvalidCredentialsException.class,
-			AccountActiveException.class, InactiveAccountException.class, InvalidActivationCodeException.class })
+	@ExceptionHandler(value = { EntityExistsException.class,
+			UsernameNotFoundException.class, BadCredentialsException.class,
+			InvalidCredentialsException.class,
+			InvalidResetTokenException.class, AccountActiveException.class,
+			InactiveAccountException.class,
+			InvalidActivationCodeException.class, 
+			AccountNotResetException.class })
 	public ResponseEntity<ExceptionResponse> invalidInput(Exception ex);
 
 	@ExceptionHandler(value = { MismatchedInputException.class })

@@ -42,7 +42,19 @@ public class UserAccountResetCodeEntity {
 	}
 
 	public UserAccountResetCodeEntity() {
-		this.resetCode = RandomStringUtils.randomAlphanumeric(RESET_CODE_LENGTH).toUpperCase();
+		this.resetCode = generateResetCode();
+	}
+
+	public void refreshResetCode() {
+		this.resetCode = generateResetCode();
+	}
+
+	private String generateResetCode() {
+		return RandomStringUtils.randomAlphanumeric(RESET_CODE_LENGTH).toUpperCase();
+	}
+
+	public UserAccountResetCodeEntity(String resetCode) {
+		this.resetCode = resetCode;
 	}
 
 	public UserAccountEntity getUserAccount() {

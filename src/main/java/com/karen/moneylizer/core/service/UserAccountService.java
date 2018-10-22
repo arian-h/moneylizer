@@ -39,7 +39,7 @@ public interface UserAccountService extends UserDetailsService {
 	 * Trigger password reset for a user account
 	 * Sends an email to the user with reset token in it
 	 */
-	public void triggerReset(String username) throws InactiveAccountException;
+	public void doReset(String username) throws InactiveAccountException, InvalidCredentialsException;
 
 	/*
 	 * Resets user password

@@ -64,18 +64,19 @@ public class UserAccountControllerImpl implements UserAccountController {
 	}
 
 	@Override
-	public void reset(String username,
+	public void reset(@RequestParam(value = "username") String username,
 			HttpServletResponse response) throws InvalidCredentialsException,
 			InactiveAccountException {
-		userAccountService.triggerReset(username);
+		userAccountService.doReset(username);
 	}
 
 	@Override
 	public void reset(@Valid @RequestBody UserAccountEntity userAccount,
-			@RequestParam String resetToken, HttpServletResponse response)
+			@RequestParam(value = "token") String token,
+			HttpServletResponse response)
 			throws InvalidCredentialsException, InvalidResetTokenException,
 			AccountNotResetException {
-		userAccountService.reset(userAccount, resetToken);
+		userAccountService.reset(userAccount, token);
 	}
 
 	//used to bind the validator to the incoming request

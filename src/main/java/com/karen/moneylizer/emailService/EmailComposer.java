@@ -28,40 +28,36 @@ public class EmailComposer {
 	public EmailComposer() {};
 
 	public void send(Email email) {
-		try {
-			BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsId, awsKey);
-			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder
-					.standard()
-					.withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-					.withRegion(region).build();
-			SendEmailRequest request = new SendEmailRequest()
-					.withDestination(
-							new Destination().withToAddresses(email
-									.getRecipients()))
-					.withMessage(
-							new Message()
-									.withBody(
-											new Body()
-													.withHtml(
-															new Content()
-																	.withCharset(
-																			"UTF-8")
-																	.withData(
-																			email.getHtmlBody()))
-													.withText(
-															new Content()
-																	.withCharset(
-																			"UTF-8")
-																	.withData(
-																			email.getTextBody())))
-									.withSubject(
-											new Content().withCharset("UTF-8")
-													.withData(
-															email.getSubject())))
-					.withSource(email.getSender());
-			client.sendEmail(request);
-		} catch (Exception ex) {
-			// TODO add logging
-		}
+		BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsId, awsKey);
+		AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder
+				.standard()
+				.withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+				.withRegion(region).build();
+		SendEmailRequest request = new SendEmailRequest()
+				.withDestination(
+						new Destination().withToAddresses(email
+								.getRecipients()))
+				.withMessage(
+						new Message()
+								.withBody(
+										new Body()
+												.withHtml(
+														new Content()
+																.withCharset(
+																		"UTF-8")
+																.withData(
+																		email.getHtmlBody()))
+												.withText(
+														new Content()
+																.withCharset(
+																		"UTF-8")
+																.withData(
+																		email.getTextBody())))
+								.withSubject(
+										new Content().withCharset("UTF-8")
+												.withData(
+														email.getSubject())))
+				.withSource(email.getSender());
+		client.sendEmail(request);
 	}
 }

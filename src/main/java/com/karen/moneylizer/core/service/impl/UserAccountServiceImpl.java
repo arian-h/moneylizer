@@ -26,6 +26,7 @@ import com.karen.moneylizer.core.entity.userAccountActivationCode.UserAccountAct
 import com.karen.moneylizer.core.entity.userAccountResetCodeEntity.UserAccountResetCodeEntity;
 import com.karen.moneylizer.core.repository.UserAccountActivationCodeRepository;
 import com.karen.moneylizer.core.repository.UserAccountRepository;
+import com.karen.moneylizer.core.repository.UserAccountResetCodeRepository;
 import com.karen.moneylizer.core.service.AccountActiveException;
 import com.karen.moneylizer.core.service.AccountNotResetException;
 import com.karen.moneylizer.core.service.InactiveAccountException;
@@ -40,11 +41,13 @@ import com.karen.moneylizer.security.SecurityConstants;
 @Service
 @Transactional
 public class UserAccountServiceImpl implements UserAccountService {
-
+	
 	@Autowired
 	private UserAccountRepository userAccountRepository;
 	@Autowired
 	private UserAccountActivationCodeRepository userAccountActivationCodeRepository;
+	@Autowired
+	private UserAccountResetCodeRepository userAccountResetCodeRepository;
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	@Autowired
@@ -129,16 +132,28 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	@Override
-	public void triggerReset(String username) throws InactiveAccountException{
+	public void doReset(String username) throws InactiveAccountException, InvalidCredentialsException{
 		UserAccountEntity userAccount = this.loadUserByUsername(username);
-		if (!userAccount.isActive()) {
-			throw new InactiveAccountException(username);
+		if (userAccount != null) {
+			if (!userAccount.isActive()) {
+				if (userAccount.isActivationCodeExpired()) {
+					userAccountRepository.deleteById(userAccount.getId());
+					throw new InvalidCredentialsException();
+				}
+				throw new InactiveAccountException(username);
+			}
+			UserAccountResetCodeEntity resetCode = null;
+			if (userAccount.isReset()) {
+				resetCode = userAccount.getResetCode();
+				resetCode.refreshResetCode();
+			} else {
+				resetCode = new UserAccountResetCodeEntity();
+			}
+			userAccount.setResetCode(resetCode);
+			resetCode.setUserAccount(userAccount);
+			userAccountRepository.save(userAccount);
+			this.sendResetCodeEmail(username, resetCode.getResetCode());
 		}
-		UserAccountResetCodeEntity resetCode = new UserAccountResetCodeEntity();
-		userAccount.setResetCode(resetCode);
-		resetCode.setUserAccount(userAccount);
-		userAccountRepository.save(userAccount);
-		this.sendResetCodeEmail(username, resetCode.getResetCode());
 	}
 
 	@Override
@@ -150,14 +165,13 @@ public class UserAccountServiceImpl implements UserAccountService {
 		UserAccountEntity userAccount = this.loadUserByUsername(username);
 		if (!userAccount.isReset()) {
 			throw new AccountNotResetException();
-		} else if (userAccount.getResetCode() != resetCodeParam) {
+		} else if (!userAccount.getResetCodeValue().equals(resetCodeParam)) {
 			throw new InvalidResetTokenException();
-		} else if (userAccount.getPassword() != passwordEncoder
-				.encode(password)) {
-			throw new InvalidCredentialsException();
 		}
 		userAccount.setPassword(passwordEncoder.encode(password));
+		userAccount.setResetCode(null);
 		userAccountRepository.save(userAccount);
+		userAccountResetCodeRepository.deleteById(userAccount.getId());
 	}
 
 	private void sendActivationCodeEmail(String recipient, String activationCode) {

@@ -4,12 +4,11 @@ import com.karen.moneylizer.core.utils.FileUtil;
 
 public class UserAccountResetEmail extends UserAccountAuthenticationEmail {
 
-	private String resetCode;
-
-	private static final String HTMLBODY = FileUtil.readFile("public/static/email/authentication/reset_email.html");
-	private static final String TEXTBODY = FileUtil.readFile("public/static/email/authentication/reset_email.html");
-
+	private static final String HTMLBODY = FileUtil.readFile(AUTHENTICATION_EMAIL_DIR + "reset_email.html");
+	private static final String TEXTBODY = FileUtil.readFile(AUTHENTICATION_EMAIL_DIR + "reset_email.txt");
 	private static final String SUBJECT = "Welcome to Moneylizer! Activate your account";
+
+	private String resetCode;
 
 	@Override
 	public String getSubject() {

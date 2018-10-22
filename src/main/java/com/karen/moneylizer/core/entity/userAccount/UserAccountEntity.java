@@ -31,7 +31,7 @@ public class UserAccountEntity implements UserDetails {
 
 	private static final long serialVersionUID = -1662173405386513224L;
 	private final static String ROLE_USER  = "ROLE_USER";
-	private final static long EXPIRATION_TIME = 40 * 1000;
+	private final static long EXPIRATION_TIME_SECONDS = 60; //TODO: move this logic out of this class
 
 	@Id
 	@GeneratedValue(generator = RandomAlphanumericIdGenerator.generatorName)
@@ -119,13 +119,18 @@ public class UserAccountEntity implements UserDetails {
 
 	public boolean isActivationCodeExpired() {
 		return this.activationCode != null
-				&& System.currentTimeMillis() - this.createTime > EXPIRATION_TIME;		
+				&& System.currentTimeMillis() - this.createTime > EXPIRATION_TIME_SECONDS * 1000;
 	}
 
 	public boolean isActive() {
 		return this.activationCode == null;
 	}
 
+	/**
+	 * Is there a reset token associated with the account
+	 * i.e. did user request to reset the password and it didn't reset it yet?
+	 * @return
+	 */
 	public boolean isReset() {
 		return this.resetCode != null;
 	}
@@ -142,7 +147,11 @@ public class UserAccountEntity implements UserDetails {
 		this.resetCode = resetCode;
 	}
 
-	public String getResetCode() {
+	public UserAccountResetCodeEntity getResetCode() {
+		return this.resetCode;
+	}
+
+	public String getResetCodeValue() {
 		if (this.resetCode == null) {
 			return null;
 		}
@@ -150,6 +159,7 @@ public class UserAccountEntity implements UserDetails {
 	}
 
 	public void setPassword(String encode) {
-		
+		this.password = encode;
 	}
+
 }

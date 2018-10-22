@@ -47,8 +47,8 @@ public interface UserAccountController {
 
 	@RequestMapping(value = "/reset", method = RequestMethod.POST)
 	public void reset(@Valid @RequestBody UserAccountEntity userAccount,
-			@RequestParam(value = "reset") String resetToken,
+			@RequestParam(value = "token") String token,
 			HttpServletResponse response) throws InvalidCredentialsException,
 			InvalidResetTokenException, AccountNotResetException;
-	
+
 }
