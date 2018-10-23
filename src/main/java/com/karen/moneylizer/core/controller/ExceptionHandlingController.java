@@ -4,6 +4,7 @@ import javax.persistence.EntityExistsException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,7 +26,8 @@ public interface ExceptionHandlingController {
 			InvalidResetTokenException.class, AccountActiveException.class,
 			InactiveAccountException.class,
 			InvalidActivationCodeException.class, 
-			AccountNotResetException.class })
+			AccountNotResetException.class, 
+			LockedException.class})
 	public ResponseEntity<ExceptionResponse> invalidInput(Exception ex);
 
 	@ExceptionHandler(value = { MismatchedInputException.class })

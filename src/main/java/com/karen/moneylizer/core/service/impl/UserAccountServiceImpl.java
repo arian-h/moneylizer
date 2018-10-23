@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -93,10 +94,20 @@ public class UserAccountServiceImpl implements UserAccountService {
 	public UserAccountEntity authenticateUserAndSetResponsenHeader(String username,
 			String password, HttpServletResponse response)
 			throws InvalidCredentialsException, InactiveAccountException {
-		Authentication authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(username,
-						password));
-		UserAccountEntity userAccount = userAccountRepository.findByUsername(username);		
+		Authentication authentication = null;
+		UserAccountEntity userAccount = userAccountRepository.findByUsername(username);
+		try {
+			authentication = authenticationManager
+					.authenticate(new UsernamePasswordAuthenticationToken(username,
+							password));
+		} catch (BadCredentialsException exc) {
+			if (userAccount != null) { // if account exists but the credentials were wrong
+				userAccount.increaseFailedLogin();
+				userAccountRepository.save(userAccount);				
+			}
+			throw new InvalidCredentialsException();
+		}
+		userAccount.resetFailedLogin();
 		if (userAccount.isActivationCodeExpired()) {
 			userAccountRepository.delete(userAccount);
 			throw new InvalidCredentialsException();
@@ -168,6 +179,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		} else if (!userAccount.getResetCodeValue().equals(resetCodeParam)) {
 			throw new InvalidResetTokenException();
 		}
+		userAccount.resetFailedLogin();
 		userAccount.setPassword(passwordEncoder.encode(password));
 		userAccount.setResetCode(null);
 		userAccountRepository.save(userAccount);

@@ -31,8 +31,9 @@ public class UserAccountEntity implements UserDetails {
 
 	private static final long serialVersionUID = -1662173405386513224L;
 	private final static String ROLE_USER  = "ROLE_USER";
-	private final static long EXPIRATION_TIME_SECONDS = 60; //TODO: move this logic out of this class
-
+	private final static long EXPIRATION_TIME_SECONDS = 60;
+	private final static int FAILURE_COUNT_PERIOD_SECONDS = 3600;
+	private final static int FAILURE_COUNT_LIMIT = 5;
 	@Id
 	@GeneratedValue(generator = RandomAlphanumericIdGenerator.generatorName)
 	@GenericGenerator(name = RandomAlphanumericIdGenerator.generatorName, strategy = "com.karen.moneylizer.core.utils.RandomAlphanumericIdGenerator")
@@ -42,6 +43,12 @@ public class UserAccountEntity implements UserDetails {
 
 	private String password;
 
+	private Long lastFailedLoginTime;
+	/**
+	 * failedLoginCount is the number of failed logins within the last
+	 * n seconds
+	 */
+	private int failedLoginCount;
 	private long createTime;
 
 	@PrimaryKeyJoinColumn
@@ -63,6 +70,8 @@ public class UserAccountEntity implements UserDetails {
 		this.activationCode = null;
 		this.createTime = System.currentTimeMillis();
 		this.resetCode = null;
+		this.lastFailedLoginTime = null;
+		this.failedLoginCount = 0;
 	}
 
 	public UserAccountEntity() {}
@@ -93,6 +102,9 @@ public class UserAccountEntity implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
+		if (this.failedLoginCount > FAILURE_COUNT_LIMIT && loginFailedWithinLastHour()) {
+			return false;
+		}
 		return true;
 	}
 
@@ -162,4 +174,20 @@ public class UserAccountEntity implements UserDetails {
 		this.password = encode;
 	}
 
+	public void increaseFailedLogin() {
+		if (!loginFailedWithinLastHour()) {
+			this.resetFailedLogin();
+		}
+		this.failedLoginCount++;
+		this.failedLoginCount = Math.min(this.failedLoginCount , FAILURE_COUNT_LIMIT);
+		this.lastFailedLoginTime = System.currentTimeMillis();
+	}
+
+	public void resetFailedLogin() {
+		this.failedLoginCount = 0;
+	}
+
+	private boolean loginFailedWithinLastHour() {
+		return System.currentTimeMillis() - this.lastFailedLoginTime < FAILURE_COUNT_PERIOD_SECONDS * 1000;
+	}
 }
