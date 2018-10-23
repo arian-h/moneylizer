@@ -10,6 +10,7 @@ import com.google.common.io.Resources;
 
 public class FileUtil {
 
+	private final static String PROPERTIES_FILE_NAME = "application.properties";
 	/**
 	 * Read a short text file all at once
 	 * 
@@ -36,26 +37,15 @@ public class FileUtil {
 	 */
 	public static String readPropertyFile(String filePath, String propertyName) {
 		String value = "";
-		InputStream inputStream = null;
-		try {
-			Properties prop = new Properties();
-			String propFileName = "application.properties";
-			inputStream = ClassLoader.getSystemClassLoader()
-					.getResourceAsStream(propFileName);
+		Properties prop = new Properties();
+		try (InputStream inputStream = ClassLoader.getSystemClassLoader()
+				.getResourceAsStream(PROPERTIES_FILE_NAME)) {
 			if (inputStream != null) {
 				prop.load(inputStream);
 				value = prop.getProperty(propertyName);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		return value;
 	}

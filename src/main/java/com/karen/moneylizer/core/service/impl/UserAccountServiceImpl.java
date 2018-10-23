@@ -105,7 +105,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 				userAccount.increaseFailedLogin();
 				userAccountRepository.save(userAccount);				
 			}
-			throw new InvalidCredentialsException();
+			throw new InvalidCredentialsException(exc);
 		}
 		userAccount.resetFailedLogin();
 		if (userAccount.isActivationCodeExpired()) {
