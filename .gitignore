@@ -1,6 +1,8 @@
 # Compiled class file
 *.class
 
+application.properties
+
 additional-spring-configuration-metadata.json
 
 #Node
@@ -38,3 +40,4 @@ npm-debug.log
 hs_err_pid*
 /.gradle/
 /build/
+/.apt_generated/

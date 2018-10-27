@@ -1,5 +1,8 @@
 package com.karen.moneylizer.emailServices.userAccountAuthentication;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.karen.moneylizer.core.utils.FileUtil;
 
 public class UserAccountResetEmail extends UserAccountAuthenticationEmail {
@@ -8,6 +11,8 @@ public class UserAccountResetEmail extends UserAccountAuthenticationEmail {
 	private static final String TEXTBODY = FileUtil.readFile(AUTHENTICATION_EMAIL_DIR + "reset_email.txt");
 	private static final String SUBJECT = "Welcome to Moneylizer! Activate your account";
 
+	@Getter
+	@Setter
 	private String resetCode;
 
 	@Override
@@ -25,11 +30,4 @@ public class UserAccountResetEmail extends UserAccountAuthenticationEmail {
 		return String.format(HTMLBODY, this.resetCode);
 	}
 
-	public void setResetCode(String resetCode) {
-		this.resetCode = resetCode;
-	}
-
-	public String getResetCode() {
-		return this.resetCode;
-	}
 }

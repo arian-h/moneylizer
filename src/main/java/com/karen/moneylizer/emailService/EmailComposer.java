@@ -1,5 +1,7 @@
 package com.karen.moneylizer.emailService;
 
+import lombok.NoArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 
 @Service
+@NoArgsConstructor
 public class EmailComposer {
 	
 	@Value("${aws.accessKeyId}")
@@ -24,8 +27,6 @@ public class EmailComposer {
 
 	@Value("${aws.region}")
 	private String region;
-	
-	public EmailComposer() {};
 
 	public void send(Email email) {
 		BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsId, awsKey);

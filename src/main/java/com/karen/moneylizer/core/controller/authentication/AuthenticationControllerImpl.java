@@ -1,4 +1,4 @@
-package com.karen.moneylizer.core.controller.impl;
+package com.karen.moneylizer.core.controller.authentication;
 
 import javax.persistence.EntityExistsException;
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.karen.moneylizer.core.controller.UserAccountController;
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 import com.karen.moneylizer.core.service.AccountActiveException;
 import com.karen.moneylizer.core.service.AccountNotResetException;
@@ -23,24 +22,24 @@ import com.karen.moneylizer.core.service.InvalidCredentialsException;
 import com.karen.moneylizer.core.service.InvalidResetTokenException;
 import com.karen.moneylizer.core.service.UserAccountService;
 import com.karen.moneylizer.core.validator.CompoundValidator;
-import com.karen.moneylizer.core.validator.UserAccountValidator;
+import com.karen.moneylizer.core.validator.UserAccountCredentialsDtoValidator;
 
 @RestController
 @RequestMapping("/api/authentication")
-public class UserAccountControllerImpl implements UserAccountController {
+public class AuthenticationControllerImpl implements AuthenticationController {
 
 	@Autowired
 	private UserAccountService userAccountService;
 
  	@Override
-	public UserAccountEntity login(@Valid @RequestBody UserAccountEntity account,
+	public UserAccountEntity login(@RequestBody UserAccountCredentialsDto userAccount,
 			HttpServletResponse response) throws InvalidCredentialsException, InactiveAccountException {
 		return userAccountService.authenticateUserAndSetResponsenHeader(
-				account.getUsername(), account.getPassword(), response);
+				userAccount.getUsername(), userAccount.getPassword(), response);
 	}
 
 	@Override
-	public UserAccountEntity create(@Valid @RequestBody UserAccountEntity userAccount,
+	public UserAccountEntity create(@Valid @RequestBody UserAccountCredentialsDto userAccount,
 			HttpServletResponse response) throws EntityExistsException, InvalidCredentialsException, InactiveAccountException {
 		String username = userAccount.getUsername();
 		String password = userAccount.getPassword();
@@ -83,7 +82,7 @@ public class UserAccountControllerImpl implements UserAccountController {
 	@InitBinder
 	public void binder(WebDataBinder binder) {
 		binder.addValidators(new CompoundValidator(new Validator[] {
-				new UserAccountValidator()}));
+				new UserAccountCredentialsDtoValidator()}));
 	}
 
 }

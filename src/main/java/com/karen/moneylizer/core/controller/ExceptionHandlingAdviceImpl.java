@@ -1,4 +1,4 @@
-package com.karen.moneylizer.core.controller.impl;
+package com.karen.moneylizer.core.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -6,11 +6,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.karen.moneylizer.core.controller.ExceptionHandlingController;
-import com.karen.moneylizer.core.controller.ExceptionResponse;
 
 @ControllerAdvice
-public class ExceptionHandlingControllerImpl implements ExceptionHandlingController {
+public class ExceptionHandlingAdviceImpl implements ExceptionHandlingAdvice {
 	@Override
 	public ResponseEntity<ExceptionResponse> invalidInput(Exception ex) {
 		return createErrorResponse(ex.getMessage());

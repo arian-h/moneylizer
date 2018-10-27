@@ -6,10 +6,15 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.commons.lang3.RandomStringUtils;
 
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 
+@Getter
+@Setter
 @Entity
 @Table(name="user_account_reset_code_entity")
 public class UserAccountResetCodeEntity {
@@ -25,24 +30,12 @@ public class UserAccountResetCodeEntity {
 
 	private String resetCode;
 
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getResetCode() {
-		return resetCode;
-	}
-
-	public void setResetCode(String resetCode) {
-		this.resetCode = resetCode;
-	}
-
 	public UserAccountResetCodeEntity() {
 		this.resetCode = generateResetCode();
+	}
+
+	public UserAccountResetCodeEntity(String resetCode) {
+		this.resetCode = resetCode;
 	}
 
 	public void refreshResetCode() {
@@ -51,18 +44,6 @@ public class UserAccountResetCodeEntity {
 
 	private String generateResetCode() {
 		return RandomStringUtils.randomAlphanumeric(RESET_CODE_LENGTH).toUpperCase();
-	}
-
-	public UserAccountResetCodeEntity(String resetCode) {
-		this.resetCode = resetCode;
-	}
-
-	public UserAccountEntity getUserAccount() {
-		return userAccount;
-	}
-
-	public void setUserAccount(UserAccountEntity userAccount) {
-		this.userAccount = userAccount;
 	}
 
 }

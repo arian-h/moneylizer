@@ -1,4 +1,4 @@
-package com.karen.moneylizer.core.controller;
+package com.karen.moneylizer.core.controller.authentication;
 
 import javax.persistence.EntityExistsException;
 import javax.servlet.http.HttpServletResponse;
@@ -17,16 +17,16 @@ import com.karen.moneylizer.core.service.InvalidActivationCodeException;
 import com.karen.moneylizer.core.service.InvalidCredentialsException;
 import com.karen.moneylizer.core.service.InvalidResetTokenException;
 
-public interface UserAccountController {
+public interface AuthenticationController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public UserAccountEntity login(
-			@Valid @RequestBody UserAccountEntity account,
+			@Valid @RequestBody UserAccountCredentialsDto userAccount,
 			HttpServletResponse response) throws InvalidCredentialsException, InactiveAccountException;
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
 	public UserAccountEntity create(
-			@Valid @RequestBody UserAccountEntity userAccount,
+			@Valid @RequestBody UserAccountCredentialsDto userAccount,
 			HttpServletResponse response) throws EntityExistsException, InvalidCredentialsException, InactiveAccountException;
 
 	@RequestMapping(value = "/activate", method = RequestMethod.POST)

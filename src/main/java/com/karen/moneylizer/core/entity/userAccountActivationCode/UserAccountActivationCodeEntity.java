@@ -6,10 +6,15 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.commons.lang3.RandomStringUtils;
 
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 
+@Getter
+@Setter
 @Entity
 @Table(name="user_account_activation_code_entity")
 public class UserAccountActivationCodeEntity {
@@ -32,28 +37,4 @@ public class UserAccountActivationCodeEntity {
 	public UserAccountActivationCodeEntity(String activationCode) {
 		this.activationCode = activationCode;
 	}
-
-	public UserAccountEntity getUserAccount() {
-		return userAccount;
-	}
-
-	public void setUserAccount(UserAccountEntity userAccount) {
-		this.userAccount = userAccount;
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getActivationCode() {
-		return activationCode;
-	}
-
-	public void setActivationCode(String activationCode) {
-		this.activationCode = activationCode;
-	}
-
 }

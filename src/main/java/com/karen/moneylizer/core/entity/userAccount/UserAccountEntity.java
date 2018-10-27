@@ -11,6 +11,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -34,13 +37,18 @@ public class UserAccountEntity implements UserDetails {
 	private final static long EXPIRATION_TIME_SECONDS = 60;
 	private final static int FAILURE_COUNT_PERIOD_SECONDS = 3600;
 	private final static int FAILURE_COUNT_LIMIT = 5;
+	
+	@Getter
 	@Id
 	@GeneratedValue(generator = RandomAlphanumericIdGenerator.generatorName)
 	@GenericGenerator(name = RandomAlphanumericIdGenerator.generatorName, strategy = "com.karen.moneylizer.core.utils.RandomAlphanumericIdGenerator")
 	private String id;
 
+	@Getter
 	private String username;
 
+	@Setter
+	@Getter
 	private String password;
 
 	private Long lastFailedLoginTime;
@@ -51,6 +59,8 @@ public class UserAccountEntity implements UserDetails {
 	private int failedLoginCount;
 	private long createTime;
 
+	@Getter
+	@Setter
 	@PrimaryKeyJoinColumn
 	@OneToOne(mappedBy= "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private UserAccountResetCodeEntity resetCode;
@@ -86,16 +96,6 @@ public class UserAccountEntity implements UserDetails {
 	}
 
 	@Override
-	public String getPassword() {
-		return password;
-	}
-
-	@Override
-	public String getUsername() {
-		return username;
-	}
-
-	@Override
 	public boolean isAccountNonExpired() {
 		return true;
 	}
@@ -113,10 +113,6 @@ public class UserAccountEntity implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
-	}
-
-	public String getId() {
-		return id;
 	}
 
 	public String getActivationCode() {
@@ -152,23 +148,11 @@ public class UserAccountEntity implements UserDetails {
 		this.activationCode = activityCode;
 	}
 
-	public void setResetCode(UserAccountResetCodeEntity resetCode) {
-		this.resetCode = resetCode;
-	}
-
-	public UserAccountResetCodeEntity getResetCode() {
-		return this.resetCode;
-	}
-
 	public String getResetCodeValue() {
 		if (this.resetCode == null) {
 			return null;
 		}
 		return resetCode.getResetCode();
-	}
-
-	public void setPassword(String encode) {
-		this.password = encode;
 	}
 
 	public void increaseFailedLogin() {

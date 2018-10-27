@@ -18,7 +18,7 @@ import com.karen.moneylizer.core.service.InvalidCredentialsException;
 import com.karen.moneylizer.core.service.InvalidResetTokenException;
 
 
-public interface ExceptionHandlingController {
+public interface ExceptionHandlingAdvice {
 
 	@ExceptionHandler(value = { EntityExistsException.class,
 			UsernameNotFoundException.class, BadCredentialsException.class,
