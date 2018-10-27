@@ -102,10 +102,7 @@ public class UserAccountEntity implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		if (this.failedLoginCount > FAILURE_COUNT_LIMIT && loginFailedWithinLastHour()) {
-			return false;
-		}
-		return true;
+		return this.failedLoginCount < FAILURE_COUNT_LIMIT || !loginFailedWithinLastHour(); 
 	}
 
 	@Override
