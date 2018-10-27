@@ -63,7 +63,7 @@ public class UserAccountEntity implements UserDetails {
 	@Setter
 	@PrimaryKeyJoinColumn
 	@OneToOne(mappedBy= "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private UserAccountResetCodeEntity resetCode;
+	private UserAccountResetCodeEntity resetCode; // TODO can we change this to optional
 
 	@PrimaryKeyJoinColumn
 	@OneToOne(mappedBy= "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -71,7 +71,7 @@ public class UserAccountEntity implements UserDetails {
 
 	@PrimaryKeyJoinColumn
 	@OneToOne(mappedBy= "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private UserAccountActivationCodeEntity activationCode;
+	private UserAccountActivationCodeEntity activationCode; //TODO can we change it to Optional
 
 	@JsonCreator
 	public UserAccountEntity(@JsonProperty(value="username", required=true) final String username, @JsonProperty(value="password", required=true) final String password) {
@@ -149,7 +149,7 @@ public class UserAccountEntity implements UserDetails {
 	}
 
 	public String getResetCodeValue() {
-		if (this.resetCode == null) {
+		if (this.resetCode == null) { //TODO change to Optional
 			return null;
 		}
 		return resetCode.getResetCode();

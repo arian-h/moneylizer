@@ -1,4 +1,4 @@
-package com.karen.moneylizer.core.controller;
+package com.karen.moneylizer.core.controller.exceptionHandle;
 
 import javax.persistence.EntityExistsException;
 
@@ -10,12 +10,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.karen.moneylizer.core.service.AccountActiveException;
-import com.karen.moneylizer.core.service.AccountNotResetException;
-import com.karen.moneylizer.core.service.InvalidActivationCodeException;
-import com.karen.moneylizer.core.service.InactiveAccountException;
-import com.karen.moneylizer.core.service.InvalidCredentialsException;
-import com.karen.moneylizer.core.service.InvalidResetTokenException;
+import com.karen.moneylizer.core.service.exceptions.InactiveAccountException;
+import com.karen.moneylizer.core.service.exceptions.InvalidAccountActivationException;
+import com.karen.moneylizer.core.service.exceptions.InvalidAccountResetActionException;
+import com.karen.moneylizer.core.service.exceptions.InvalidCredentialsException;
 
 
 public interface ExceptionHandlingAdvice {
@@ -23,10 +21,8 @@ public interface ExceptionHandlingAdvice {
 	@ExceptionHandler(value = { EntityExistsException.class,
 			UsernameNotFoundException.class, BadCredentialsException.class,
 			InvalidCredentialsException.class,
-			InvalidResetTokenException.class, AccountActiveException.class,
+			InvalidAccountResetActionException.class, InvalidAccountActivationException.class,
 			InactiveAccountException.class,
-			InvalidActivationCodeException.class, 
-			AccountNotResetException.class, 
 			LockedException.class})
 	public ResponseEntity<ExceptionResponse> invalidInput(Exception ex);
 

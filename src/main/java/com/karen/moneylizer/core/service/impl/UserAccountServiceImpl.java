@@ -28,13 +28,11 @@ import com.karen.moneylizer.core.entity.userAccountResetCodeEntity.UserAccountRe
 import com.karen.moneylizer.core.repository.UserAccountActivationCodeRepository;
 import com.karen.moneylizer.core.repository.UserAccountRepository;
 import com.karen.moneylizer.core.repository.UserAccountResetCodeRepository;
-import com.karen.moneylizer.core.service.AccountActiveException;
-import com.karen.moneylizer.core.service.AccountNotResetException;
-import com.karen.moneylizer.core.service.InactiveAccountException;
-import com.karen.moneylizer.core.service.InvalidActivationCodeException;
-import com.karen.moneylizer.core.service.InvalidCredentialsException;
-import com.karen.moneylizer.core.service.InvalidResetTokenException;
 import com.karen.moneylizer.core.service.UserAccountService;
+import com.karen.moneylizer.core.service.exceptions.InactiveAccountException;
+import com.karen.moneylizer.core.service.exceptions.InvalidAccountActivationException;
+import com.karen.moneylizer.core.service.exceptions.InvalidAccountResetActionException;
+import com.karen.moneylizer.core.service.exceptions.InvalidCredentialsException;
 import com.karen.moneylizer.emailServices.userAccountAuthentication.UserAccountActivationEmail;
 import com.karen.moneylizer.emailServices.userAccountAuthentication.UserAccountResetEmail;
 import com.karen.moneylizer.security.SecurityConstants;
@@ -71,12 +69,8 @@ public class UserAccountServiceImpl implements UserAccountService {
 			throws EntityExistsException {
 		UserAccountEntity userAccount = userAccountRepository.findByUsername(username);
 		if (userAccount != null) {
-			if (userAccount.isActivationCodeExpired()) {
-				userAccountRepository.delete(userAccount);					
-			} else {
-				throw new EntityExistsException(String.format(
-						"Username %s is not available", username));				
-			}
+			throw new EntityExistsException(String.format(
+					"Username %s is not available", username));
 		}
 		userAccount = new UserAccountEntity(username,
 				passwordEncoder.encode(password));
@@ -93,7 +87,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	@Override
 	public UserAccountEntity authenticateUserAndSetResponsenHeader(String username,
 			String password, HttpServletResponse response)
-			throws InvalidCredentialsException, InactiveAccountException {
+			throws InvalidCredentialsException {
 		Authentication authentication = null;
 		UserAccountEntity userAccount = userAccountRepository.findByUsername(username);
 		try {
@@ -108,12 +102,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 			throw new InvalidCredentialsException(exc);
 		}
 		userAccount.resetFailedLogin();
-		if (userAccount.isActivationCodeExpired()) {
-			userAccountRepository.delete(userAccount);
-			throw new InvalidCredentialsException();
-		} else if (!userAccount.isActive()) {
-			throw new InactiveAccountException(username);
-		} else if (userAccount.isReset()) {
+		if (userAccount.isReset()) { //TODO do we need this? when account is reset, it's already has a 
 			throw new InvalidCredentialsException();
 		}
 		response.addHeader(SecurityConstants.AUTHENTICATION_HEADER, String
@@ -126,31 +115,21 @@ public class UserAccountServiceImpl implements UserAccountService {
 
 	@Override
 	public void activateAccount(String username, String activationCode)
-			throws AccountActiveException, InvalidActivationCodeException {
+			throws InvalidAccountActivationException {
 		UserAccountEntity userAccount = this.loadUserByUsername(username);
-		if (userAccount.isActive()) {
-			throw new AccountActiveException(username);
-		} else if (userAccount.isActivationCodeExpired()) {
-			userAccountRepository.delete(userAccount);
-		} else {
-			if (!userAccount.getActivationCode().equals(activationCode)) {
-				throw new InvalidActivationCodeException();
-			}
-			userAccount.activate();
-			userAccountRepository.save(userAccount);
-			userAccountActivationCodeRepository.deleteById(userAccount.getId());
+		if (userAccount.isActive() || userAccount.isActivationCodeExpired() || !userAccount.getActivationCode().equals(activationCode)) {
+			throw new InvalidAccountActivationException(username); // TODO can we change this to RuntimeException?
 		}
+		userAccount.activate();
+		userAccountRepository.save(userAccount);
+		userAccountActivationCodeRepository.deleteById(userAccount.getId());
 	}
 
 	@Override
-	public void doReset(String username) throws InactiveAccountException, InvalidCredentialsException{
+	public void doReset(String username) throws InactiveAccountException {
 		UserAccountEntity userAccount = this.loadUserByUsername(username);
-		if (userAccount != null) {
+		if (userAccount != null) { //TODO: can we use Optional instead? 
 			if (!userAccount.isActive()) {
-				if (userAccount.isActivationCodeExpired()) {
-					userAccountRepository.deleteById(userAccount.getId());
-					throw new InvalidCredentialsException();
-				}
 				throw new InactiveAccountException(username);
 			}
 			UserAccountResetCodeEntity resetCode = null;
@@ -169,18 +148,16 @@ public class UserAccountServiceImpl implements UserAccountService {
 
 	@Override
 	public void reset(UserAccountEntity userAccountParam, String resetCodeParam)
-			throws InvalidResetTokenException, InvalidCredentialsException,
-			AccountNotResetException {
-		String username = userAccountParam.getUsername();
-		String password = userAccountParam.getPassword();
-		UserAccountEntity userAccount = this.loadUserByUsername(username);
-		if (!userAccount.isReset()) {
-			throw new AccountNotResetException();
-		} else if (!userAccount.getResetCodeValue().equals(resetCodeParam)) {
-			throw new InvalidResetTokenException();
+			throws InvalidAccountResetActionException, InvalidCredentialsException {
+		UserAccountEntity userAccount = this.loadUserByUsername(userAccountParam.getUsername());
+		if (userAccount == null) {
+			throw new InvalidCredentialsException();
+		}
+		if (!userAccount.isReset() || !userAccount.getResetCodeValue().equals(resetCodeParam)) {
+			throw new InvalidAccountResetActionException();
 		}
 		userAccount.resetFailedLogin();
-		userAccount.setPassword(passwordEncoder.encode(password));
+		userAccount.setPassword(passwordEncoder.encode(userAccountParam.getPassword()));
 		userAccount.setResetCode(null);
 		userAccountRepository.save(userAccount);
 		userAccountResetCodeRepository.deleteById(userAccount.getId());

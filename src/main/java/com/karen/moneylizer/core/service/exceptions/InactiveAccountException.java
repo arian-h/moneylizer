@@ -1,4 +1,4 @@
-package com.karen.moneylizer.core.service;
+package com.karen.moneylizer.core.service.exceptions;
 
 public class InactiveAccountException extends Exception {
 

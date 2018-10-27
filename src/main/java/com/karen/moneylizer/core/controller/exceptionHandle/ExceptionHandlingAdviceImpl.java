@@ -1,4 +1,4 @@
-package com.karen.moneylizer.core.controller;
+package com.karen.moneylizer.core.controller.exceptionHandle;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

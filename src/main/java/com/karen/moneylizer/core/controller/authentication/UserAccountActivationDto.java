@@ -13,8 +13,6 @@ public class UserAccountActivationDto implements Serializable {
 
 	private String username;
 
-	private String password;
-
 	private String activationCode;
 
 }

@@ -14,13 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
-import com.karen.moneylizer.core.service.AccountActiveException;
-import com.karen.moneylizer.core.service.AccountNotResetException;
-import com.karen.moneylizer.core.service.InactiveAccountException;
-import com.karen.moneylizer.core.service.InvalidActivationCodeException;
-import com.karen.moneylizer.core.service.InvalidCredentialsException;
-import com.karen.moneylizer.core.service.InvalidResetTokenException;
 import com.karen.moneylizer.core.service.UserAccountService;
+import com.karen.moneylizer.core.service.exceptions.InactiveAccountException;
+import com.karen.moneylizer.core.service.exceptions.InvalidAccountActivationException;
+import com.karen.moneylizer.core.service.exceptions.InvalidAccountResetActionException;
+import com.karen.moneylizer.core.service.exceptions.InvalidCredentialsException;
 import com.karen.moneylizer.core.validator.CompoundValidator;
 import com.karen.moneylizer.core.validator.UserAccountCredentialsDtoValidator;
 
@@ -40,7 +38,7 @@ public class AuthenticationControllerImpl implements AuthenticationController {
 
 	@Override
 	public UserAccountEntity create(@Valid @RequestBody UserAccountCredentialsDto userAccount,
-			HttpServletResponse response) throws EntityExistsException, InvalidCredentialsException, InactiveAccountException {
+			HttpServletResponse response) throws EntityExistsException, InvalidCredentialsException {
 		String username = userAccount.getUsername();
 		String password = userAccount.getPassword();
 		userAccountService.saveIfNotExistsOrExpired(username, password);
@@ -49,32 +47,23 @@ public class AuthenticationControllerImpl implements AuthenticationController {
 	}
 
 	@Override
-	public UserAccountEntity activate(
-			@Valid @RequestBody UserAccountEntity activationCode,
-			HttpServletResponse response) throws AccountActiveException,
-			InvalidActivationCodeException, InvalidCredentialsException,
-			InactiveAccountException {
-		String code = activationCode.getActivationCode();
-		String username = activationCode.getUsername();
-		String password = activationCode.getPassword();
-		userAccountService.activateAccount(username, code);
-		return userAccountService.authenticateUserAndSetResponsenHeader(
-				username, password, response);
+	public void activate(
+			@Valid @RequestBody UserAccountActivationDto accountActivation,
+			HttpServletResponse response) throws InvalidAccountActivationException,
+			InvalidCredentialsException {
+		userAccountService.activateAccount(accountActivation.getUsername(), accountActivation.getActivationCode());
 	}
 
 	@Override
-	public void reset(@RequestParam(value = "username") String username,
-			HttpServletResponse response) throws InvalidCredentialsException,
-			InactiveAccountException {
+	public void doReset(@RequestParam(value = "username") String username,
+			HttpServletResponse response) throws InactiveAccountException {
 		userAccountService.doReset(username);
 	}
 
 	@Override
 	public void reset(@Valid @RequestBody UserAccountEntity userAccount,
 			@RequestParam(value = "token") String token,
-			HttpServletResponse response)
-			throws InvalidCredentialsException, InvalidResetTokenException,
-			AccountNotResetException {
+			HttpServletResponse response) throws InvalidAccountResetActionException, InvalidCredentialsException {
 		userAccountService.reset(userAccount, token);
 	}
 
