@@ -1,6 +1,7 @@
 package com.karen.moneylizer.core.entity.userAccount;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -23,8 +24,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.karen.moneylizer.core.entity.user.UserEntity;
-import com.karen.moneylizer.core.entity.userAccountActivationCode.UserAccountActivationCodeEntity;
 import com.karen.moneylizer.core.entity.userAccountResetCodeEntity.UserAccountResetCodeEntity;
+import com.karen.moneylizer.core.entity.usernameConfirmationCode.UsernameConfirmationEntity;
 import com.karen.moneylizer.core.utils.RandomAlphanumericIdGenerator;
 
 @Entity
@@ -34,8 +35,8 @@ public class UserAccountEntity implements UserDetails {
 
 	private static final long serialVersionUID = -1662173405386513224L;
 	private final static String ROLE_USER  = "ROLE_USER";
-	private final static long EXPIRATION_TIME_SECONDS = 60;
-	private final static int FAILURE_COUNT_PERIOD_SECONDS = 3600;
+	private final static long EXPIRATION_TIME = TimeUnit.DAYS.toMillis(10);
+	private final static long FAILURE_COUNT_PERIOD = TimeUnit.HOURS.toMillis(1);
 	private final static int FAILURE_COUNT_LIMIT = 5;
 	
 	@Getter
@@ -71,13 +72,13 @@ public class UserAccountEntity implements UserDetails {
 
 	@PrimaryKeyJoinColumn
 	@OneToOne(mappedBy= "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private UserAccountActivationCodeEntity activationCode; //TODO can we change it to Optional
+	private UsernameConfirmationEntity confirmationEntity; //TODO can we change it to Optional
 
 	@JsonCreator
 	public UserAccountEntity(@JsonProperty(value="username", required=true) final String username, @JsonProperty(value="password", required=true) final String password) {
 		this.password = password.trim();
 		this.username = username.trim();
-		this.activationCode = null;
+		this.confirmationEntity = null;
 		this.createTime = System.currentTimeMillis();
 		this.resetCode = null;
 		this.lastFailedLoginTime = null;
@@ -115,20 +116,20 @@ public class UserAccountEntity implements UserDetails {
 		return true;
 	}
 
-	public String getActivationCode() {
-		if (this.activationCode == null) {
+	public String getConfirmationCode() {
+		if (this.confirmationEntity == null) {
 			return null;
 		}
-		return activationCode.getActivationCode();
+		return confirmationEntity.getConfirmationCode();
 	}
 
-	public boolean isActivationCodeExpired() {
-		return this.activationCode != null
-				&& System.currentTimeMillis() - this.createTime > EXPIRATION_TIME_SECONDS * 1000;
+	public boolean isConfirmationCodeExpired() {
+		return this.confirmationEntity != null
+				&& System.currentTimeMillis() - this.createTime > EXPIRATION_TIME;
 	}
 
-	public boolean isActive() {
-		return this.activationCode == null;
+	public boolean isUsernameConfirmed() {
+		return this.confirmationEntity == null;
 	}
 
 	/**
@@ -140,16 +141,16 @@ public class UserAccountEntity implements UserDetails {
 		return this.resetCode != null;
 	}
 
-	public void activate() {
-		this.activationCode = null;
+	public void confirmUsername() {
+		this.confirmationEntity = null;
 	}
 
-	public void setActivationCode(UserAccountActivationCodeEntity activityCode) {
-		this.activationCode = activityCode;
+	public void setConfirmationCode(UsernameConfirmationEntity confirmationCode) {
+		this.confirmationEntity = confirmationCode;
 	}
 
 	public String getResetCodeValue() {
-		if (this.resetCode == null) { //TODO change to Optional
+		if (this.resetCode == null) {
 			return null;
 		}
 		return resetCode.getResetCode();
@@ -169,6 +170,10 @@ public class UserAccountEntity implements UserDetails {
 	}
 
 	private boolean loginFailedWithinLastHour() {
-		return System.currentTimeMillis() - this.lastFailedLoginTime < FAILURE_COUNT_PERIOD_SECONDS * 1000;
+		return System.currentTimeMillis() - this.lastFailedLoginTime < FAILURE_COUNT_PERIOD;
+	}
+
+	public void resetConfirmationCode() {
+		this.confirmationEntity = new UsernameConfirmationEntity();
 	}
 }

@@ -1,4 +1,4 @@
-package com.karen.moneylizer.core.controller.exceptionHandle;
+package com.karen.moneylizer.core.controller.exceptionHandler;
 
 import javax.persistence.EntityExistsException;
 
@@ -10,9 +10,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.karen.moneylizer.core.service.exceptions.InactiveAccountException;
-import com.karen.moneylizer.core.service.exceptions.InvalidAccountActivationException;
-import com.karen.moneylizer.core.service.exceptions.InvalidAccountResetActionException;
+import com.karen.moneylizer.core.service.exceptions.UnconfirmedUsernameException;
+import com.karen.moneylizer.core.service.exceptions.UsernameConfirmationException;
+import com.karen.moneylizer.core.service.exceptions.AccountResetException;
 import com.karen.moneylizer.core.service.exceptions.InvalidCredentialsException;
 
 
@@ -21,9 +21,9 @@ public interface ExceptionHandlingAdvice {
 	@ExceptionHandler(value = { EntityExistsException.class,
 			UsernameNotFoundException.class, BadCredentialsException.class,
 			InvalidCredentialsException.class,
-			InvalidAccountResetActionException.class, InvalidAccountActivationException.class,
-			InactiveAccountException.class,
-			LockedException.class})
+			AccountResetException.class, UsernameConfirmationException.class,
+			UnconfirmedUsernameException.class,
+			LockedException.class, IllegalArgumentException.class})
 	public ResponseEntity<ExceptionResponse> invalidInput(Exception ex);
 
 	@ExceptionHandler(value = { MismatchedInputException.class })

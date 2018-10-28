@@ -23,17 +23,17 @@ import org.springframework.stereotype.Service;
 import com.karen.moneylizer.RabbitMQConfiguration;
 import com.karen.moneylizer.core.entity.user.UserEntity;
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
-import com.karen.moneylizer.core.entity.userAccountActivationCode.UserAccountActivationCodeEntity;
 import com.karen.moneylizer.core.entity.userAccountResetCodeEntity.UserAccountResetCodeEntity;
-import com.karen.moneylizer.core.repository.UserAccountActivationCodeRepository;
+import com.karen.moneylizer.core.entity.usernameConfirmationCode.UsernameConfirmationEntity;
+import com.karen.moneylizer.core.repository.UsernameConfirmationRepository;
 import com.karen.moneylizer.core.repository.UserAccountRepository;
 import com.karen.moneylizer.core.repository.UserAccountResetCodeRepository;
 import com.karen.moneylizer.core.service.UserAccountService;
-import com.karen.moneylizer.core.service.exceptions.InactiveAccountException;
-import com.karen.moneylizer.core.service.exceptions.InvalidAccountActivationException;
-import com.karen.moneylizer.core.service.exceptions.InvalidAccountResetActionException;
+import com.karen.moneylizer.core.service.exceptions.UnconfirmedUsernameException;
+import com.karen.moneylizer.core.service.exceptions.UsernameConfirmationException;
+import com.karen.moneylizer.core.service.exceptions.AccountResetException;
 import com.karen.moneylizer.core.service.exceptions.InvalidCredentialsException;
-import com.karen.moneylizer.emailServices.userAccountAuthentication.UserAccountActivationEmail;
+import com.karen.moneylizer.emailServices.userAccountAuthentication.UsernameConfirmationEmail;
 import com.karen.moneylizer.emailServices.userAccountAuthentication.UserAccountResetEmail;
 import com.karen.moneylizer.security.SecurityConstants;
 
@@ -44,7 +44,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	@Autowired
 	private UserAccountRepository userAccountRepository;
 	@Autowired
-	private UserAccountActivationCodeRepository userAccountActivationCodeRepository;
+	private UsernameConfirmationRepository usernameConfirmationRepository;
 	@Autowired
 	private UserAccountResetCodeRepository userAccountResetCodeRepository;
 	@Autowired
@@ -77,10 +77,10 @@ public class UserAccountServiceImpl implements UserAccountService {
 		UserEntity user = new UserEntity();
 		user.setUserAccount(userAccount);
 		userAccount.setUser(user);
-		UserAccountActivationCodeEntity activationCode = new UserAccountActivationCodeEntity();
-		activationCode.setUserAccount(userAccount);
-		userAccount.setActivationCode(activationCode);
-		this.sendActivationCodeEmail(username, activationCode.getActivationCode());
+		UsernameConfirmationEntity confirmationCode = new UsernameConfirmationEntity();
+		confirmationCode.setUserAccount(userAccount);
+		userAccount.setConfirmationCode(confirmationCode);
+		this.sendConfirmationCodeEmail(username, confirmationCode.getConfirmationCode());
 		userAccountRepository.save(userAccount);
 	}
 
@@ -102,7 +102,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 			throw new InvalidCredentialsException(exc);
 		}
 		userAccount.resetFailedLogin();
-		if (userAccount.isReset()) { //TODO do we need this? when account is reset, it's already has a 
+		if (userAccount.isReset()) {
 			throw new InvalidCredentialsException();
 		}
 		response.addHeader(SecurityConstants.AUTHENTICATION_HEADER, String
@@ -114,23 +114,33 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	@Override
-	public void activateAccount(String username, String activationCode)
-			throws InvalidAccountActivationException {
+	public void doConfirmUsername(String username, String confirmationCode)
+			throws UsernameConfirmationException {
 		UserAccountEntity userAccount = this.loadUserByUsername(username);
-		if (userAccount.isActive() || userAccount.isActivationCodeExpired() || !userAccount.getActivationCode().equals(activationCode)) {
-			throw new InvalidAccountActivationException(username); // TODO can we change this to RuntimeException?
+		if (userAccount.isUsernameConfirmed() || userAccount.isConfirmationCodeExpired() || !userAccount.getConfirmationCode().equals(confirmationCode)) {
+			throw new UsernameConfirmationException(username);
 		}
-		userAccount.activate();
+		userAccount.confirmUsername();
 		userAccountRepository.save(userAccount);
-		userAccountActivationCodeRepository.deleteById(userAccount.getId());
+		usernameConfirmationRepository.deleteById(userAccount.getId());
 	}
 
 	@Override
-	public void doReset(String username) throws InactiveAccountException {
+	public void triggerConfirmUsername(String username) throws UsernameConfirmationException {
+		UserAccountEntity userAccount = this.loadUserByUsername(username);
+		if (userAccount.isUsernameConfirmed()) {
+			throw new UsernameConfirmationException(username);
+		}
+		userAccount.resetConfirmationCode();
+		userAccountRepository.save(userAccount);
+	}
+
+	@Override
+	public void triggerReset(String username) throws UnconfirmedUsernameException {
 		UserAccountEntity userAccount = this.loadUserByUsername(username);
 		if (userAccount != null) { //TODO: can we use Optional instead? 
-			if (!userAccount.isActive()) {
-				throw new InactiveAccountException(username);
+			if (!userAccount.isUsernameConfirmed()) {
+				throw new UnconfirmedUsernameException(username);
 			}
 			UserAccountResetCodeEntity resetCode = null;
 			if (userAccount.isReset()) {
@@ -147,14 +157,14 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	@Override
-	public void reset(UserAccountEntity userAccountParam, String resetCodeParam)
-			throws InvalidAccountResetActionException, InvalidCredentialsException {
+	public void doReset(UserAccountEntity userAccountParam, String resetCodeParam)
+			throws AccountResetException, InvalidCredentialsException {
 		UserAccountEntity userAccount = this.loadUserByUsername(userAccountParam.getUsername());
 		if (userAccount == null) {
 			throw new InvalidCredentialsException();
 		}
 		if (!userAccount.isReset() || !userAccount.getResetCodeValue().equals(resetCodeParam)) {
-			throw new InvalidAccountResetActionException();
+			throw new AccountResetException();
 		}
 		userAccount.resetFailedLogin();
 		userAccount.setPassword(passwordEncoder.encode(userAccountParam.getPassword()));
@@ -163,10 +173,10 @@ public class UserAccountServiceImpl implements UserAccountService {
 		userAccountResetCodeRepository.deleteById(userAccount.getId());
 	}
 
-	private void sendActivationCodeEmail(String recipient, String activationCode) {
-		UserAccountActivationEmail email = new UserAccountActivationEmail();
+	private void sendConfirmationCodeEmail(String recipient, String confirmationCode) {
+		UsernameConfirmationEmail email = new UsernameConfirmationEmail();
 		email.setRecipients(new String[]{ recipient });
-		email.setActivationCode(activationCode);
+		email.setConfirmationCode(confirmationCode);
 		rabbitTemplate.convertAndSend(RabbitMQConfiguration.AUTHENTICATION_EMAILS_QUEUE, email);
 	}
 

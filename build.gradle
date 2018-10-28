@@ -11,6 +11,8 @@ plugins {
 	//a plugin to run the gradle application using command line: ./gradlew run
     id 'application'
 	id 'org.springframework.boot' version '2.0.4.RELEASE'
+	id 'net.ltgt.apt' version '0.10'
+	
 }
 
 group = 'com.karen'
@@ -50,6 +52,7 @@ task webpack(type: Exec, dependsOn: 'npmInstall') {
 	inputs.dir('src')
 }
 
+
 task copyTask(type: Copy, dependsOn: 'webpack') {
     from 'src/main/ui/bundle.js'
     into 'src/main/resources/public/static/js/'
@@ -72,4 +75,6 @@ dependencies {
 	compile group: 'com.rabbitmq', name: 'amqp-client', version: '5.4.3'
 	compile group: 'org.springframework.amqp', name: 'spring-rabbit', version: '2.0.6.RELEASE'
 	compile group: 'com.amazonaws', name: 'aws-java-sdk-ses', version: '1.11.425'
+	compileOnly 'org.projectlombok:lombok:1.18.2'
+	apt 'org.projectlombok:lombok:1.18.2'
 }

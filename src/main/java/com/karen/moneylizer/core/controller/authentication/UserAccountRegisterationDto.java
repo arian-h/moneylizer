@@ -7,12 +7,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserAccountCredentialsDto implements Serializable {
+public class UserAccountRegisterationDto implements Serializable {
 
-	private static final long serialVersionUID = 420800308374364582L;
+	private static final long serialVersionUID = -6562093952548208523L;
 
 	private String username;
 
 	private String password;
 
+	private String name;
 }
