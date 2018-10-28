@@ -19,3 +19,9 @@ The signing key should be stored in `MONEYLIZER_JWT_SECRET_KEY` as a system envi
 
 ### To debug the app with Eclipse when app is running in terminal
 Run the app using `sudo -E ./gradlew run --debug-jvm` in terminal, debug the app using Remote Java Application in eclipse, host name "localhost", port "5005"
+
+## Lombok ##
+In this project project Lombok is used to create getters/setters/constructors and in general, reduce the amount of boilerplate code. Add the following line to the `eclipse.ini`:
+`-javaagent:lombok.jar`
+And copy `lombok.jar` to the folder next to eclipse executable: 
+https://projectlombok.org/download
