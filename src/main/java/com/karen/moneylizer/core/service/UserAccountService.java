@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import com.karen.moneylizer.core.controller.authentication.UserAccountResetDto;
+import com.karen.moneylizer.core.controller.authentication.dto.UserAccountResetDto;
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 import com.karen.moneylizer.core.service.exceptions.UnconfirmedUsernameException;
 import com.karen.moneylizer.core.service.exceptions.UsernameConfirmationException;

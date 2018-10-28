@@ -1,4 +1,4 @@
-package com.karen.moneylizer.core.controller.authentication;
+package com.karen.moneylizer.core.controller.authentication.dto;
 
 import org.springframework.stereotype.Service;
 

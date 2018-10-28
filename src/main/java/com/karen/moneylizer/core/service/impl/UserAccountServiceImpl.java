@@ -21,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.karen.moneylizer.RabbitMQConfiguration;
-import com.karen.moneylizer.core.controller.authentication.UserAccountResetDto;
+import com.karen.moneylizer.core.controller.authentication.dto.UserAccountResetDto;
 import com.karen.moneylizer.core.entity.user.UserEntity;
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 import com.karen.moneylizer.core.entity.userAccountResetCodeEntity.UserAccountResetCodeEntity;
