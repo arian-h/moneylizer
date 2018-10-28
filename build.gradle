@@ -77,4 +77,6 @@ dependencies {
 	compile group: 'com.amazonaws', name: 'aws-java-sdk-ses', version: '1.11.425'
 	compileOnly 'org.projectlombok:lombok:1.18.2'
 	apt 'org.projectlombok:lombok:1.18.2'
+	compile group: 'org.springframework', name: 'spring-websocket', version: '5.1.1.RELEASE'
+	compile group: 'org.springframework', name: 'spring-messaging', version: '5.1.1.RELEASE'	
 }

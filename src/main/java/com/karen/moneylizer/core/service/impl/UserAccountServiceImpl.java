@@ -97,10 +97,10 @@ public class UserAccountServiceImpl implements UserAccountService {
 							password));
 		} catch (BadCredentialsException exc) {
 			if (userAccount != null) { // if account exists but the credentials were wrong
-				userAccount.increaseFailedLogin();
+				userAccount.increaseFailedLoginAttemps();
 				userAccountRepository.save(userAccount);				
 			}
-			throw new InvalidCredentialsException(exc);
+			throw new InvalidCredentialsException();
 		}
 		userAccount.resetFailedLogin();
 		if (userAccount.isReset()) {

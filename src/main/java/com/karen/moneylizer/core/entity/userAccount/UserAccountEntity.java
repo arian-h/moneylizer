@@ -158,7 +158,7 @@ public class UserAccountEntity implements UserDetails {
 		return resetCode.getResetCode();
 	}
 
-	public void increaseFailedLogin() {
+	public void increaseFailedLoginAttemps() {
 		if (!loginFailedWithinLastHour()) {
 			this.resetFailedLogin();
 		}
@@ -172,6 +172,9 @@ public class UserAccountEntity implements UserDetails {
 	}
 
 	private boolean loginFailedWithinLastHour() {
+		if (this.lastFailedLoginTime == null) {
+			this.lastFailedLoginTime = new Long(0);
+		}
 		return System.currentTimeMillis() - this.lastFailedLoginTime < FAILURE_COUNT_PERIOD;
 	}
 
