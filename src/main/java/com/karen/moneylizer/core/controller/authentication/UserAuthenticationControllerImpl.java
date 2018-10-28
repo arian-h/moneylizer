@@ -25,6 +25,9 @@ public class UserAuthenticationControllerImpl implements UserAuthenticationContr
 	@Autowired
 	private UserAccountRegisterationDtoValidator userAccountRegisterationDtoValidator;
 
+	@Autowired
+	private UserAccountResetDtoValidator userAccountResetDtoValidator;
+
 	@Override
 	public UserAccountEntity login(@RequestBody UserAccountLoginDto userAccountLoginDto,
 			HttpServletResponse response) throws InvalidCredentialsException {
@@ -49,8 +52,9 @@ public class UserAuthenticationControllerImpl implements UserAuthenticationContr
 	}
 
 	@Override
-	public void doReset(@RequestBody UserAccountEntity userAccount, //TODO fix this
+	public void doReset(@RequestBody UserAccountResetDto userAccount,
 			@RequestParam(value = "token") String token) throws AccountResetException, InvalidCredentialsException {
+		userAccountResetDtoValidator.validate(userAccount);
 		userAccountService.doReset(userAccount, token);
 	}
 

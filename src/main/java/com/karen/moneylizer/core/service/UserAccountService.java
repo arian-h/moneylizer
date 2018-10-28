@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import com.karen.moneylizer.core.controller.authentication.UserAccountResetDto;
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 import com.karen.moneylizer.core.service.exceptions.UnconfirmedUsernameException;
 import com.karen.moneylizer.core.service.exceptions.UsernameConfirmationException;
@@ -53,7 +54,7 @@ public interface UserAccountService extends UserDetailsService {
 	/*
 	 * Resets user password
 	 */
-	void doReset(UserAccountEntity userAccountParam, String resetCodeParam)
+	void doReset(UserAccountResetDto userAccount, String resetCodeParam)
 			throws AccountResetException, InvalidCredentialsException;
 
 

@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import com.karen.moneylizer.core.utils.ValidationUtil;
 
 @Service
-public class UserAccountRegisterationDtoValidator {
+public class UserAccountResetDtoValidator {
 
-	public void validate(UserAccountRegisterationDto target) {
+	public void validate(UserAccountResetDto target) {
 		ValidationUtil.isUsernameValid(target.getUsername()).ifPresent(
 				error -> {
 					throw new IllegalArgumentException(error);
@@ -16,9 +16,6 @@ public class UserAccountRegisterationDtoValidator {
 				error -> {
 					throw new IllegalArgumentException(error);
 				});
-		ValidationUtil.validateName(target.getName()).ifPresent(error -> {
-			throw new IllegalArgumentException(error);
-		});
 	}
 
 }

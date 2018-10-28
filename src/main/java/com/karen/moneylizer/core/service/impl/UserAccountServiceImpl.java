@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.karen.moneylizer.RabbitMQConfiguration;
+import com.karen.moneylizer.core.controller.authentication.UserAccountResetDto;
 import com.karen.moneylizer.core.entity.user.UserEntity;
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 import com.karen.moneylizer.core.entity.userAccountResetCodeEntity.UserAccountResetCodeEntity;
@@ -117,7 +118,9 @@ public class UserAccountServiceImpl implements UserAccountService {
 	public void doConfirmUsername(String username, String confirmationCode)
 			throws UsernameConfirmationException {
 		UserAccountEntity userAccount = this.loadUserByUsername(username);
-		if (userAccount.isUsernameConfirmed() || userAccount.isConfirmationCodeExpired() || !userAccount.getConfirmationCode().equals(confirmationCode)) {
+		if (userAccount.isUsernameConfirmed()
+				|| userAccount.isConfirmationCodeExpired()
+				|| !userAccount.getConfirmationCode().equals(confirmationCode)) {
 			throw new UsernameConfirmationException(username);
 		}
 		userAccount.confirmUsername();
@@ -138,7 +141,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	@Override
 	public void triggerReset(String username) throws UnconfirmedUsernameException {
 		UserAccountEntity userAccount = this.loadUserByUsername(username);
-		if (userAccount != null) { //TODO: can we use Optional instead? 
+		if (userAccount != null) {
 			if (!userAccount.isUsernameConfirmed()) {
 				throw new UnconfirmedUsernameException(username);
 			}
@@ -157,9 +160,10 @@ public class UserAccountServiceImpl implements UserAccountService {
 	}
 
 	@Override
-	public void doReset(UserAccountEntity userAccountParam, String resetCodeParam)
+	public void doReset(UserAccountResetDto account, String resetCodeParam)
 			throws AccountResetException, InvalidCredentialsException {
-		UserAccountEntity userAccount = this.loadUserByUsername(userAccountParam.getUsername());
+		
+		UserAccountEntity userAccount = this.loadUserByUsername(account.getUsername());
 		if (userAccount == null) {
 			throw new InvalidCredentialsException();
 		}
@@ -167,7 +171,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 			throw new AccountResetException();
 		}
 		userAccount.resetFailedLogin();
-		userAccount.setPassword(passwordEncoder.encode(userAccountParam.getPassword()));
+		userAccount.setPassword(passwordEncoder.encode(account.getPassword()));
 		userAccount.setResetCode(null);
 		userAccountRepository.save(userAccount);
 		userAccountResetCodeRepository.deleteById(userAccount.getId());

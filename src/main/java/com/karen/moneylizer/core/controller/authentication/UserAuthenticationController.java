@@ -35,7 +35,7 @@ public interface UserAuthenticationController {
 			throws UnconfirmedUsernameException;
 
 	@RequestMapping(value = "/reset", method = RequestMethod.POST)
-	public void doReset(@RequestBody UserAccountEntity userAccount,
+	public void doReset(@RequestBody UserAccountResetDto userAccount,
 			@RequestParam(value = "token") String token)
 			throws InvalidCredentialsException,
 			AccountResetException;
