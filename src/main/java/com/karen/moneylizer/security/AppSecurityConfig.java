@@ -56,6 +56,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/api/authentication/**").and().ignoring()
+		.and().ignoring().antMatchers("/wsocket/**").and().ignoring()
 				.antMatchers(HttpMethod.OPTIONS, "/**");
 	}
 

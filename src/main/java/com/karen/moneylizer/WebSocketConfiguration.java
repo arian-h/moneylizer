@@ -24,8 +24,8 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/quote-socket").addInterceptors(new HandshakeInterceptor() {
-			
+        registry.addEndpoint("/wsocket").addInterceptors(new HandshakeInterceptor() {
+
 			@Override
 			public boolean beforeHandshake(ServerHttpRequest request,
 					ServerHttpResponse response, WebSocketHandler wsHandler,
