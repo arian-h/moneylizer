@@ -39,7 +39,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 					Exception exception) {
 				System.out.println("Salam");
 			}
-		}); /*This endpoint is used for the purpose of handshaking with the client*/
+		}).setAllowedOrigins("http://localhost:8080").withSockJS(); /*This endpoint is used for the purpose of handshaking with the client*/
     }
 
 }
