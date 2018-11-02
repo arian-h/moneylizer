@@ -4,7 +4,7 @@ public final class SecurityConstants {
 	/*
 	 * Authentication will only be initiated for the requests with matching URLs
 	 */
-	protected final static String DEFAULT_FILTER_PROCESS_URL = "/**";
+	protected final static String DEFAULT_FILTER_PROCESS_URL = "/api/**";
 
 	public static final String AUTHENTICATION_HEADER = "Authorization";
 

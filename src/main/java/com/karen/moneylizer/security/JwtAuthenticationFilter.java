@@ -18,12 +18,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
+import com.karen.moneylizer.WebSocketConfiguration;
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 import com.karen.moneylizer.core.service.UserAccountService;
 
 public class JwtAuthenticationFilter extends
 		AbstractAuthenticationProcessingFilter {
 
+	private final static String TOKEN_PARAM_NAME = "token";
 	@Autowired
 	private UserAccountService userAccountService;
 
@@ -41,28 +43,35 @@ public class JwtAuthenticationFilter extends
 			IOException, ServletException {
 		String token = request
 				.getHeader(SecurityConstants.AUTHENTICATION_HEADER);
-		if (token != null) {
-			// parse the token
-			String username = null;
-			try {
-				username = Jwts
-						.parser()
-						.setSigningKey(SecurityConstants.JWT_SECRET)
-						.parseClaimsJws(
-								token.replace(SecurityConstants.BEARER, ""))
-						.getBody().getSubject();
-			} catch (Exception e) {
-				throw new BadCredentialsException(
-						"Bad username/password presented");
+		if (token == null) {
+			if (request.getRequestURI().startsWith(WebSocketConfiguration.WEBSOCKET_HANDSHAKE_ENDPOINT_URI)) {
+				token = request.getParameter(TOKEN_PARAM_NAME);
 			}
-			UserAccountEntity userAccount = userAccountService.loadUserByUsername(username);
-			if (userAccount != null) {
-				return new UsernamePasswordAuthenticationToken(
-						userAccount.getUsername(), userAccount.getPassword(),
-						userAccount.getAuthorities());
-			}
+		} else {
+			token = token.replace(SecurityConstants.BEARER, "");
 		}
-		throw new BadCredentialsException("Bad username/password presented");
+		if (token == null) {
+			throw new BadCredentialsException("Bad username/password presented");
+		}
+		// parse the token
+		String username = null;
+		try {
+			username = Jwts
+					.parser()
+					.setSigningKey(SecurityConstants.JWT_SECRET)
+					.parseClaimsJws(token)
+					.getBody().getSubject();
+		} catch (Exception e) {
+			throw new BadCredentialsException(
+					"Bad username/password presented");
+		}
+		UserAccountEntity userAccount = userAccountService.loadUserByUsername(username);
+		if (userAccount != null) {
+			return new UsernamePasswordAuthenticationToken(
+					userAccount.getUsername(), userAccount.getPassword(),
+					userAccount.getAuthorities());
+		}
+		return null;
 	}
 
 	/*

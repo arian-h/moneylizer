@@ -10,4 +10,5 @@ public class QuoteController {
 	public void singleQuote() {
 		System.out.println("Salam");
 	}
+
 }
