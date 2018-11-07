@@ -7,7 +7,7 @@ package com.karen.moneylizer.core.service.exceptions;
  * @author root
  *
  */
-public class InvalidCredentialsException extends RuntimeException {
+public class InvalidCredentialsException extends Exception {
 
 	private static final long serialVersionUID = 3626997596681382830L;
 	private static final String INVALID_CREDENTIALS_MSG = "Bad credentials";

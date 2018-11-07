@@ -1,5 +1,8 @@
 package com.karen.moneylizer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
@@ -15,24 +18,33 @@ import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
 
 @Configuration
-public class RabbitMQConfiguration implements RabbitListenerConfigurer {
+public class RabbitMQConfiguration implements RabbitListenerConfigurer { //TODO split to RabbitMQConfiguration, EmailMQConfiguration, QuoteMQConfiguration
 
 	public final static String AUTHENTICATION_EMAILS_QUEUE = "AUTHENTICATION_EMAILS_QUEUE";
-	public final static String EMAIL_MESSAGE_EXCHANGE_NAME = "EMAIL_EVENTS";
-
+	public final static String APPLICATION_MQ_EXCHANGE_NAME = "APPLICATION_EVENTS";
+	public final static String QUOTE_REQUEST_QUEUE = "QUOTE_REQUEST_QUEUE";
+	
 	@Bean
 	public Queue authenticationEmailsQueue() {
 		return new Queue(AUTHENTICATION_EMAILS_QUEUE, false);
 	}
 
 	@Bean
-	public DirectExchange emailMessagesExchange() {
-		return new DirectExchange(EMAIL_MESSAGE_EXCHANGE_NAME);
+	public DirectExchange applicationMQExchange() {
+		return new DirectExchange(APPLICATION_MQ_EXCHANGE_NAME);
 	}
 
 	@Bean
-	public Binding authenticationEmailMQBinding(Queue queue, DirectExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(AUTHENTICATION_EMAILS_QUEUE);
+	public List<Binding> bindings() {
+		List<Binding> bindings = new ArrayList<Binding>();
+		bindings.add(BindingBuilder.bind(quoteRequestQueue()).to(applicationMQExchange()).with(AUTHENTICATION_EMAILS_QUEUE));
+		bindings.add(BindingBuilder.bind(authenticationEmailsQueue()).to(applicationMQExchange()).with(QUOTE_REQUEST_QUEUE));
+		return bindings;
+	}
+
+	@Bean
+	public Queue quoteRequestQueue() {
+		return new Queue(QUOTE_REQUEST_QUEUE, false);
 	}
 
 	@Bean

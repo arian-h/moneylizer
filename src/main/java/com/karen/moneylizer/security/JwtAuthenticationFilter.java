@@ -18,9 +18,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
-import com.karen.moneylizer.WebSocketConfiguration;
 import com.karen.moneylizer.core.entity.userAccount.UserAccountEntity;
 import com.karen.moneylizer.core.service.UserAccountService;
+import com.karen.moneylizer.websocket.WebSocketConfiguration;
 
 public class JwtAuthenticationFilter extends
 		AbstractAuthenticationProcessingFilter {
