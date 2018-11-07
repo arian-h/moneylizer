@@ -25,3 +25,7 @@ In this project project Lombok is used to create getters/setters/constructors an
 `-javaagent:lombok.jar`
 And copy `lombok.jar` to the folder next to eclipse executable: 
 https://projectlombok.org/download
+
+## RabbitMQ ##
+Run RabbitMQ to use the message queue
+rabbitmq-server
